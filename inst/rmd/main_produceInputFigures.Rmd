@@ -1,7 +1,6 @@
 ---
 title: 'Hydra: Multispecies, multifleet model for Georges Bank'
 author: "Andy Beet, Mike Fogarty, Sarah Gaichas, Sean Lucey, Laurel Col, Rob Gamble, Gavin Fay"
-date: "Sep, 2018"
 output:
   html_document:
     collapsed: yes
@@ -16,13 +15,8 @@ output:
 <!-- ### The following plots are from one of the following scenarios -->
 
 ```{r, out.width = "800px", echo=FALSE, include=FALSE}
-# source the functions to create the plots , then create them
-wd <- "C:/Users/Andrew.Beet/Documents/MyWork/Hydra/Beet-Hydra/dataInputsHydra"
-setwd(wd)
-outPath <- paste0(wd,"/figures")
-outSpecies <- paste0(wd,"/documentationImages/speciesjpgs")
-if (!exists("main_plotInputs",mode="function")) {source("main_plotInputs.R")}
-#main_plotInputs(outPath)
+outSpecies <- "speciesjpgs"
+outPath <- "figures"
 
 ```
 Hydra is a length based multispecies, multifleet model, focused on Georges Bank, based on the concept of place based management, a defining requirement for Ecosystem based fisheries Management (EBFM). The set of species represented in this model account for ~90 of landings of all fish species on Georges Bank over the period of 1977-2014.
