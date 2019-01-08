@@ -1,12 +1,13 @@
 Package: mshydradata
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Manipulate input data for multispecies model Hydra
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: person("andy","beet",email="andrew.beet@noaa.gov"",role=c("aut","cre"))
+Maintainer: Andy Beet <andrew.beet@noaa.gov>
+Description: Baseline data are lazilty loaded with the package, these can be manipulated and then plotted (with documentation)
+    to enable the user to visulaize the masses of input data. The data are then formatted into .dat and .pin files required for 
+    Hydra to run.
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
