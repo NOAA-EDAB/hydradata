@@ -11,11 +11,6 @@
 #'Two data files are output. A ".dat" and a ".pin" file. These are required by the Hydra code to run. The name of the file is determined by the variable \code{outputFilename} in the
 #'list \code{listOfParameters}
 #'
-#' Parts of data that user may want to control
-#'
-#' Effort Fishing = implied by use of assessment and exploitation rate, or historical
-#'
-#' from 1_3_3 to 1_4. added hockey stick and segmented, 4th fleet, and 4th guild
 #' NOTE 4TH FLEET HAS NO EFFORT. HARD CODED TO OVERWRITE FILE. BEWARE
 #' @export
 

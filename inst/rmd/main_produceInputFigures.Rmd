@@ -1,0 +1,553 @@
+---
+title: 'Hydra: Multispecies, multifleet model for Georges Bank'
+author: "Andy Beet, Mike Fogarty, Sarah Gaichas, Sean Lucey, Laurel Col, Rob Gamble, Gavin Fay"
+date: "Sep, 2018"
+output:
+  html_document:
+    collapsed: yes
+    number_sections: yes
+    smooth_scrol: yes
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+<!-- ### The following plots are from one of the following scenarios -->
+
+```{r, out.width = "800px", echo=FALSE, include=FALSE}
+# source the functions to create the plots , then create them
+wd <- "C:/Users/Andrew.Beet/Documents/MyWork/Hydra/Beet-Hydra/dataInputsHydra"
+setwd(wd)
+outPath <- paste0(wd,"/figures")
+outSpecies <- paste0(wd,"/documentationImages/speciesjpgs")
+if (!exists("main_plotInputs",mode="function")) {source("main_plotInputs.R")}
+#main_plotInputs(outPath)
+
+```
+Hydra is a length based multispecies, multifleet model, focused on Georges Bank, based on the concept of place based management, a defining requirement for Ecosystem based fisheries Management (EBFM). The set of species represented in this model account for ~90 of landings of all fish species on Georges Bank over the period of 1977-2014.
+
+The set of species (except Mackerel) are under direct management of New England Fisheries Management Council (NEFMC) or jointly managed with the Mid Atlantic FMC (spiny dogfish and monkfish). Mackerel is managed exclusively by MAFMC but is included here to represent its importance as a forage species on Georges Bank
+
+Hydra is designed to provide simulated data for two main purposes.
+
+1. Performance testing of simpler (non-size structured) assessment models
+
+2. To assess management procedures for the Northeast U.S. Continental Shelf
+
+The current model incorporates 10 interacting species on Georges Bank. The species undergo growth, recruitment, predation, and fishing. The health of the interacting species populations can be assessed at discrete intervals of time and harvest control rules implemented based on a set of predefined reference points. The structure and framework of the model lends itself well to Management Strategy Evaluation, a proposed future use.
+
+The model was first published in ICES: Gaichas et al. (2017). Combining stock, multispecies, and ecosystem level fishery objectives within an operational management procedure: simulations to start the conversation. 74(2). 552-565 https://doi.org/10.1093/icesjms/fsw119
+
+# Background
+
+EXCERPTS FROM THE PAPER, CIE REVIEW, SHOW FLOW DIAGRAM ETC
+
+# Ecological Production Units (EPUs)
+
+REFERENCE FOGARTY PAPER.
+DESCRIBE STAT AREAS IN EACH 
+
+# Species in the model {.tabset .tabset-pills}
+
+## Spiny Dogfish 
+Elasmobranch
+
+
+```{r sp_dog,  echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outSpecies,"/spinyDogfish.jpg"))
+```
+
+&copy; [NEFSC Photo Archive](https://www.nefsc.noaa.gov/drupal7/?q=photo-gallery)
+
+## Winter Skate
+Elasmobranch
+
+```{r sp_ws,  echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outSpecies,"/winterSkate.jpg"))
+```
+
+&copy; [NEFSC Photo Archive](https://www.nefsc.noaa.gov/drupal7/?q=photo-gallery)
+
+## Herring
+Planktivore
+
+```{r sp_her,  echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outSpecies,"/atlanticHerring.jpg"))
+```
+
+&copy; [NEFSC Photo Archive](https://www.nefsc.noaa.gov/drupal7/?q=photo-gallery)
+
+
+## Mackerel
+Planktivore
+
+```{r sp_mac,  echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outSpecies,"/atlanticMackerel.jpg"))
+```
+
+&copy; [NEFSC Photo Archive](https://www.nefsc.noaa.gov/drupal7/?q=photo-gallery)
+
+
+## Winter Flounder
+Benthivores
+
+```{r sp_wf,  echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outSpecies,"/winterFlounder.jpg"))
+```
+
+&copy; [NEFSC Photo Archive](https://www.nefsc.noaa.gov/drupal7/?q=photo-gallery)
+
+
+## Yellowtail Flounder
+Benthivores
+
+```{r sp_yf,  echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outSpecies,"/yellowtailFlounder.jpg"))
+```
+
+&copy; [NEFSC Photo Archive](https://www.nefsc.noaa.gov/drupal7/?q=photo-gallery)
+
+
+## Haddock
+Benthivore
+
+```{r sp_had,  echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outSpecies,"/haddock.jpg"))
+```
+
+&copy; [NEFSC Photo Archive](https://www.nefsc.noaa.gov/drupal7/?q=photo-gallery)
+
+
+## Cod
+Piscivore
+
+```{r sp_cod,  echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outSpecies,"/cod.jpg"))
+```
+
+&copy; [NEFSC Photo Archive](https://www.nefsc.noaa.gov/drupal7/?q=photo-gallery)
+
+
+## Silver Hake
+Piscivore
+
+```{r sp_sh,  echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outSpecies,"/silverHake.jpg"))
+```
+
+&copy; [NEFSC Photo Archive](https://www.nefsc.noaa.gov/drupal7/?q=photo-gallery)
+
+
+## MonkFish
+Piscivore
+
+```{r sp_monk,  echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outSpecies,"/monkfish.jpg"))
+```
+
+&copy; [NEFSC Photo Archive](https://www.nefsc.noaa.gov/drupal7/?q=photo-gallery)
+
+
+# Foodweb {.tabset .tabset-pills}
+The foodweb is represented in two forms:
+
+## Matrix
+A matrix with predators along the columns and prey along the row. A filled in cell represents predation.
+
+```{r foodweb_matrix_plot, out.width = "800px", echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outPath,"/Hydra_foodWeb_matrix.png"))
+```
+
+## Network diagram
+
+A foodweb where species are represented by trophic level on the y axis. Species of the same color belong to the same guild. Large circles represent species categorized as predators, and small circles represent prey (This categorization is used when calculating the predator-prey index) 
+
+```{r foodweb_network_plot, out.width = "800px", echo=FALSE}
+# foodweb plot
+knitr::include_graphics(paste0(outPath,"/Hydra_foodWeb_network.png"))
+```
+
+
+# Growth
+
+Each species in the model grows according to either 
+
+* The Von Bertalannfy growth function  
+
+$$l_{i,t}=L_{\infty}(1-e^{-k_{i}(t-t_{i,o})})e^{\Sigma\alpha_{p}X_{p,t} }$$
+
+* or exponential growth function
+
+$$l_{i,t}=\psi_{i} a_{i}^{\kappa_i}e^{\Sigma\alpha_{p}X_{p,t} }$$
+where
+$l_{i,t}$ is length of species i at time t, 
+$L_{\infty}$ is asymptotic length of species i, 
+$a_{i}$ is age of species i, 
+$\kappa_{i}$ and $\psi_i$ are model parameters and $\alpha_{p}$ is the effect of covariate $X_{p,t}$ at time t.
+
+
+These curves were fit to data outside of the model. Only parameter values are passed to Hydra
+
+The red line depicts the time it takes for each species to grow to the end of the first size class/bin. (Size classes shown later in this document)
+
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Growth.png"))
+```
+
+
+Each species has its been assigned 5 size related classes based on ????? and a species is permitted to grow into the next size class only. To ensure this all growth rates are standardized by the the fastest growing species. This rate of growth determins the number of time steps in the model. The bin widths for each species are shown in the following figure 
+
+The time required to grow through a designated length interval under von Bertalanffy growth is
+
+$$ \Delta t_i = \frac{1}{\kappa_i} log_e \left[\frac{L_{\infty,i}e^{\Sigma\alpha_{p}X_{p,t} } - l_{l,i}}{L_{\infty,i}e^{\Sigma\alpha_{p}X_{p,t} } - l_{u,i}}\right]$$
+
+and the time required to grow through a designated length interval for exponential growth is
+
+$$\Delta t_i= \left[\frac{l_{u,i}}{\psi_ie^{\Sigma\alpha_{p}X_{p,t} }}\right]^{\frac{1}{\kappa_i}} - \left[ \frac{l_{l,i}}{\psi_i e^{\Sigma\alpha_{p}X_{p,t} }}\right]^{\frac{1}{\kappa_i}}$$
+
+where $l_{u,i}$ and $l_{u,i}$ are the lengths of species i at the upper and lower bound of the designated interval.
+
+
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_binWidths.png"))
+```
+
+# Recruitment
+
+## Stock Recruitment
+The general form for recruitment follows:
+
+$$ R_t = f(S_{t-1},\theta)e^{\epsilon_t + \Sigma\alpha_{p}X_{p,t}}$$
+where $R_t$ is recruitment at time t, $S_t$ is spawning stock biomass at time t, $\theta$ is a vector of model parameters, and $\epsilon_t$ is gaussian error. $\alpha_{p}$ is the effect of covariate $X_{p,t}$ at time t.
+
+Hydra implements several specific forms for $f(S_{t-1},\theta)$
+
+* Deriso- Schnute
+
+$$f(S_{t-1},\theta) = \alpha S_{t-1} (1-\beta\gamma S_{t-1})^{\frac{1}{\gamma} }$$ 
+
+* Gamma
+
+$$f(S_{t-1},\theta) = \alpha S_{t-1}^\gamma e^{-\beta S_{t-1}}$$ 
+
+* Ricker (Gamma with $\gamma$ = 1)
+
+$$f(S_{t-1},\theta) = \alpha S_{t-1} e^{-\beta S_{t-1}}$$ 
+
+* Beverton-Holt
+
+$$f(S_{t-1},\theta) = \frac{\alpha S_{t-1}}{ (1+\beta S_{t-1})}$$ 
+
+
+* Shepherd
+
+$$f(S_{t-1},\theta) = \frac{\alpha S_{t-1}}{ (1+(\frac{S_{t-1}}{\beta})^\gamma)}$$ 
+Note for $\gamma$ = 1 this reduces to the Beverton holt and with $\gamma$ = 2 it approximates the Ricker form
+
+* Segmented (Piecewise Linear)
+
+$$ f(S_{t-1},\theta) = \alpha S_{t-1} \qquad \qquad \qquad \qquad \textrm{if} \quad S_{t-1} \le \delta $$
+
+$$ \qquad \qquad = \alpha S_{t-1} + \beta(S_{t-1} \gt \delta)  \qquad \textrm{if} \quad S_{t-1} > \delta$$
+Note that when $\beta$ = -$\alpha$ the model reduces to the Hockey Stick form.
+
+
+
+
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_StockRecruitment.png"))
+```
+
+## Maturity
+Maturity determines the proportion of individuals in each size class capable of producing spawners at each time point
+
+
+$$ M_{i,j,t}= \frac{1}{1+exp(-\nu_i - \Omega_i l_{i,j} + \Sigma\alpha_{p}X_{p,t} )} $$
+where $\nu_{i}$ and $\Omega_{i}$ are species specific parameters, 
+$l_{i,j}$ is the lengh of species i at the midpoint of size class j.
+$\alpha_{p}$ is the effect of covariate $X_{p,t}$ at time t.
+
+There is an exception for dogfish where $M=0$ for all size classes except the largest size class where $M=1$. This mimics the fact that only the largest size class can reproduce
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Maturity.png"))
+```
+
+## Fecundity 
+Fecundity rates only important in egg production. Typically unused.
+
+$$Fecundity_{\; i,j} = d_{i}\theta_{i,j} l_{i,j}^{\; \;h_{i}}$$
+
+where $d_{i}$ and $h_{i}$ are species specific parameters, 
+$\theta_{i,j}$ are species/sizeclass specific parameters.
+$l_{i,j}$ is the lengh of species i at the midpoint of size class j.
+
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Fecundity.png"))
+```
+
+# Predation
+
+## Predation (M2)
+
+The biological interactions (predation) amongst species in multispecies models are a critical component. The predation rate is defined as M2
+
+$$M2_{m,n,t} = \sum_{j}\sum_{k} I_{i,j,t}N_{i,j,t}\frac{\rho_{i,j,m,n}}{\Sigma_a\Sigma_b \rho_{i,j,a,b} \bar W_{a,b}N_{a,b,t} + \Omega}$$
+
+
+M2 comprises several components:
+ 
+* Size Preference for prey by predator
+* weight ratio of prey:predator
+* length-weight relationship
+* Daily Food Intake 
+
+## Length-weight relationship
+
+The length-weight relationships are fit outside of Hydra.
+
+$$ w_{i,j}=a_{i} {l_{i,j}}^{b_{i}}$$
+
+The parameters $a_{i}$ and $b_{i}$ are passed to Hydra. $l_{i,j}$ is the lengh of species i at the midpoint of size class j.
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_lengthWeight.png"))
+```
+
+## Weight Ratios  {.tabset .tabset-pills}
+Weight ratios are calculated using the ratios of weight at the midpoints of the size classes. Weights are calculated using the length-weight relationships. Weight-ratios are only relevant for predators and the species they prey on. The following figures show each predator and their prey (subplot). Each subplot shows predator size class along the x-axis and the ratio of prey to predator weight along the y-axis. (Weights are calculated from the midpoints of each size class based on section:[Length-weight relationship] ). Each line on a subplot represents the size class of a prey species and shows the weight ratio between predator size class and the prey for a given size class. The solid line represents the mean of the size preference function as shown in section: [Size Preference]
+
+### Spiny Dogfish
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_weightRatio_spinydog.png"))
+```
+
+### Winter Skate
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_weightRatio_winterskate.png"))
+```
+
+### Atlantic Cod
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_weightRatio_Acod.png"))
+```
+
+### Atlandic Haddock
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_weightRatio_haddock.png"))
+```
+
+### Silver Hake
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_weightRatio_silverhake.png"))
+```
+
+### Monkfish
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_weightRatio_monkfish.png"))
+```
+
+
+
+## Size Preference
+Size Preference - log-normally distributed to have mean preference at ratio of 1/33 (Taken from Hall et al. 2006, Rochet et al. 2011)
+
+$$\theta_{n,j}=\frac{1}{\left(\frac{w_n}{w_j}\right)\sigma_j\sqrt(2\pi)}exp\left( -\frac{1}{2\sigma_j^2}\left(ln\left(\frac{w_n}{w_j}\right)-\psi_{j}\right)^2\right)$$
+
+where $\frac{w_n}{w_j}$ is the ratio of prey of size n to predator of size j
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_SizePreference.png"))
+```
+
+## Food Intake
+Food Intake as a function of temperature for each size class. Stomach content data (Bowman & Michaels, 1984) used in conjunction with vacuation rates 
+
+$$I_{i,j,t} = 365*24\left[\alpha_i e^{\beta_i T_t}\right] \bar C_{i,j,t}$$
+where $\bar C_{i,j,t}$ is mean stomach content at time t for species i of size class j and $T_{t}$ is temperateure at time t
+
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Intake.png"))
+```
+
+# Fishing
+
+Hydra implements 5 fleets
+
+* Demersal Fleet (Large Mesh) - Fishing along the ocean bottom
+* Demersal Fleet (Small Mesh) - Targeting silver hake
+* Pelagic Fleet - Fishing in the water column (seines, pelagic longlines and drift gillnets)
+* Fixed Gear Fleet - Fixed gill nets
+* Fixed Gear Fleet - Bottom longlines
+
+Each fleet has different characteristics:
+
+* Defined level of effort
+* Selectivities
+
+These are a measure of the selection process by fishing gear which causes the catch composition to be different from the general population. Worded in a different way it represents the probability of a fish remaining in the gear as a function of its size. It is used to control the impact of fishing on juveniles
+
+* Catchabilities
+
+Defined as fish caught per fish available per unit effort and per unit time. Worded in a different way it represents the probability of any single fish being caught 
+
+
+Total fishing mortality by fleet can be summarized as:
+
+$$F_{i,j,g,t} = s_{i,j,g}q_{i,j,g}E_{g,t}\left[1-p(D_{i,j,g,t})p(surv_{i,j,g,t}|D_{i,j,g,t})\right]$$
+
+where $s_{i,j,g}$ and  $q_{i,j,g}$ are time independent fishing selectivities and catchability coefficients for species i and size class j in a fishing fleet with gear g. $E_{g,t}$ is effort by fleet with gear g in time t. $p(D_{i,j,g,t})$ is the probability species i, size j is discarded by fleet with gear g in time t. $p(surv_{i,j,g,t}|D_{i,j,g,t})$ is the probability those discarded, survive.
+
+## Fishing Effort 
+
+Historic fishing effort data for Georges Bank was compiled from the Commercial Fisheries database. Each designated fleet comprises multiple gear types. The Georges Bank region was defined using statistical areas. The resulting effort was standardized using the method of Mayo et al. 1992 to account for vessel size and gear type.
+
+DEFINE GEAR TYPES ATTRIBUTED TO EACH FLEET USED
+REFERENCE MAYO ET AL PAPER FOR STANDARDIZATION
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Effort.png"))
+```
+
+## Selectivities
+Fishing Selectivities for gear type, g (fleet).
+
+$$s_{i,j,g}=\left[1+e^{-(c_{i,g}+d_{i,g}L_{i,j})}\right]^{-1}$$
+
+where $L_{i,j}$ is the midpoint of the jth size class interval, and $c_{i,g}$ and $d_{i,g}$ are species specific parametes for each fleet type. HOW WERE THESE CALCULATED/ ESTIMATED?
+
+The following figure shows the selectivities of each fleet for each species.
+
+* Black = Demersal Fleet
+
+* Blue = Pelagic Fleet
+
+* Red = Fixed Gear Fleet
+
+* = small Mesh
+
+* = Longline botom
+
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Selectivities.png"))
+```
+
+## Fishing Catchabilities
+
+WHERE DID THESE COME FROM?
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_FishingQ.png"))
+```
+
+## Discard and survival probabilities
+
+Once fish are brought to the surface all teleosts and other bony fish (those with swim bladders) are assumed to be dead. Elamobranchs on the other hand can survive the trip to the surface and if discarded by the fisher have a probability of surviving. To capture this, we include the probability of discarding an elasmobranch species and a probability of survival given it is discarded.
+
+## Exploitation {.tabset .tabset-pills}
+
+Exploitation rates = Effort * fishing catchabilities
+
+### benthic
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_ExploitationRate_benthic.png"))
+```
+
+### pelagic
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_ExploitationRate_pelagic.png"))
+```
+
+### longline
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_ExploitationRate_longline.png"))
+```
+
+### small mesh
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_ExploitationRate_smallMesh.png"))
+```
+
+### 5th fleet (Effort not yet calculated)
+
+# Environmental data and covariates
+
+## Temperature
+
+The observed temperature time series is used in the food intake calculations. This may be averaged prior to running the model. Check output plots to make sure. 
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Temperature.png"))
+```
+
+## Covariates
+Environmental covariate data can be used to model [growth], [maturity] and [stock recruitment] however, its current use is sparse
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Covariates.png"))
+```
+
+# Starting biomass and number of individuals
+
+Starting values are obtained by running the model with zero fishing effort.
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Y1N_Biomass.png"))
+```
+
+
+# Assessment
+
+An assessment in Hydra is defined as an evaluation of the current state of the system. This evaluation results in the adoption of a harvest control rule. The frequency of an assessment is optional (once a year, every three years, etc.).
+
+Currently during an assessment a decision is made to reduce fishing effort based on B/B0 levels (In principal any other criterion or set of criteria could be used to assess the satte of the system). The following figures describe one possible set of harvest control rules. A step function is used to ramp down the exploitation rate (a function of effort) when the relative biomass falls below predefined levels. A a continuous ramp down harvest control rule is also an option.
+
+Red line indicates the Exploitation level at the 20% biomass threshold
+
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Assessment_Thresholds.png"))
+```
+
+## Observed Biomass and Catch
+
+These are used only in fitting the model. While this is not currently implemented the place holder is there for future use. The current biomass values have been taken from surveys and the catch from the Atlantis model.
+
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Biomass.png"))
+```
+
+
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics(paste0(outPath,"/Hydra_Catch.png"))
+```
+
