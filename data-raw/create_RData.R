@@ -92,15 +92,15 @@ get_DatData <- function(path){
 
   # observed survey biomass
   obsBio <- read.csv(paste0(path,"/observation_biomass.csv"),header=TRUE)
-  d$observedBiomass <- t(obsBio[,2:(d$Nspecies+1)])
+  d$observedBiomass <- t(obsBio)
 
   # observed survey biomass
   obsCatch <- read.csv(paste0(path,"/observation_catch.csv"),header=TRUE)
-  d$observedCatch <- t(obsCatch[,2:(d$Nspecies+1)])
+  d$observedCatch <- t(obsCatch)
 
   # observed effort by fleet
   obsEffort <- read.csv(paste0(path,"/observation_effort.csv"),header=TRUE)
-  d$observedEffort <- t(obsEffort[,2:(d$Nfleets+1)])
+  d$observedEffort <- t(obsEffort)
   d$fleetNames <- (names(obsEffort)[2:(d$Nfleets+1)])
 
   # observed temperature
