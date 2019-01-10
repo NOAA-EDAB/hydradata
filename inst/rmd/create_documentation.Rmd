@@ -17,6 +17,7 @@ output:
 ```{r, out.width = "800px", echo=FALSE, include=FALSE}
 outSpecies <- "speciesjpgs"
 outPath <- "figures"
+main_plot_inputs(outPath = "rmd/figures")
 
 ```
 Hydra is a length based multispecies, multifleet model, focused on Georges Bank, based on the concept of place based management, a defining requirement for Ecosystem based fisheries Management (EBFM). The set of species represented in this model account for ~90 of landings of all fish species on Georges Bank over the period of 1977-2014.
