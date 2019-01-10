@@ -105,7 +105,7 @@ get_DatData <- function(path){
 
   # observed temperature
   obsTemp <- read.csv(paste0(path,"/observation_temperature.csv"),header=TRUE)
-  d$observedTemperature <- t(obsTemp[,2])
+  d$observedTemperature <- t(obsTemp)
 
   # stomach weight
   stomachContent <- read.csv(paste0(path,"/intake_stomachContent.csv"),header=TRUE)

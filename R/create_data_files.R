@@ -211,7 +211,7 @@ write_DatFile <- function(d,options,listOfParameters) {
   cat("#   init_matrix obs_temp(1,Nareas,1,Nyrs)      ",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  Either observed temperature  or manufactured temperature for simulation runs",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#1977 to 1997 Georges Bank bottom temp from 2011 ESR (1964-1976 set to 8.0) and 1998 to 2010 Georges Bank bottom temp from 2011 ESR",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",observedTemperature),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",observedTemperature[2,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # estimation phases
   cat("#  init_int yr1Nphase            //year 1 N at size estimation phase",file=outputFileName,fill=TRUE,append=TRUE)
