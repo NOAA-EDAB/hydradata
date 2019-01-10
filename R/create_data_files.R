@@ -384,17 +384,21 @@ write_DatFile <- function(d,options,listOfParameters) {
 
 
   # fishery selectivity
+  # need to reformat for cat function
+  fisherySelectc <- format(as.matrix(fisherySelectivityc),digits=5)
+  fisherySelectd <- format(as.matrix(fisherySelectivityd),digits=5)
+
   cat("#  //fishery selectivity pars from dat file, for now not area specific",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix fishsel_c(1,Nspecies,1,Nfleets)  //fishery selectivity c par",file=outputFileName,fill=TRUE,append=TRUE)
   cat("  #benthic trawl and pelagic trawl and longline",file=outputFileName,fill=TRUE,append=TRUE)
   for (isp in 1:Nspecies) {
-    cat(c(" ",fisherySelectivityc[isp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+    cat(c(" ",fisherySelectc[isp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
   cat("#  init_matrix fishsel_d(1,Nspecies,1,Nfleets)  //fishery selectivity d par",file=outputFileName,fill=TRUE,append=TRUE)
   cat("  #benthic trawl and pelagic trawl and longline",file=outputFileName,fill=TRUE,append=TRUE)
   for (isp in 1:Nspecies) {
-    cat(c(" ",fisherySelectivityd[isp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+    cat(c(" ",fisherySelectd[isp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
 
@@ -540,8 +544,11 @@ write_PinFile <- function(p,d,options,listOfParameters){
   # year 1 initial values of N
   cat("#//Initial N year 1",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_3darray yr1N(1,Nareas,1,Nspecies,1,Nsizebins)       //initial year N at size, millions",file=outputFileName,fill=TRUE,append=TRUE)
+
+  # need to reformat for cat function
+  Y1Nformat <- format(as.matrix(Y1N),digits=7)
   for (sp in 1:Nspecies) {
-    cat(c(" ",Y1N[sp,]),file=outputFileName,fill=TRUE,append=TRUE)
+    cat(c(" ",Y1Nformat[sp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
 
   # recruitment. these are not used. If we delete then all previous code not compatible.
@@ -570,11 +577,13 @@ write_PinFile <- function(p,d,options,listOfParameters){
   cat(c(" ",recSigma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # fishery Q's
+ # format for cat function
+  fishQ <- format(as.matrix(fisheryq),digits=7)
   cat("# Fishery qs",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_3darray fishery_q(1,Nareas,1,Nspecies,1,Nfleets,fqphase)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("# area1.btrawl ptrawl longline)",file=outputFileName,fill=TRUE,append=TRUE)
   for (isp in 1:Nspecies) {
-    cat(c(" ",fisheryq[isp,]," #",rownames(fisheryq)[isp]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+    cat(c(" ",fishQ[isp,]," #",rownames(fisheryq)[isp]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
 
