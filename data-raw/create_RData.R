@@ -71,6 +71,7 @@ get_DatData <- function(path){
   # sizebin lengths
   binwidth <- read.csv(paste0(path,"/length_sizebins.csv"),header=TRUE)
   d$binwidth <- binwidth[1:d$Nspecies,1:d$Nsizebins]
+  row.names(d$binwidth) <- binwidth[,ncol(binwidth)]
 
   # length to weight coefficients/parameters
   lenwt <- read.csv(paste0(path,"/lengthweight_species.csv"),header=TRUE)
@@ -199,9 +200,9 @@ get_DatData <- function(path){
 
   #fishery/fleet selectivity
   fisherySelectivityc<- read.csv(paste0(path,"/fishing_selectivityc.csv"),header=TRUE,row.names = 1)
-  d$fisherySelectivityc <- format(as.matrix(fisherySelectivityc),digits=5)
+  d$fisherySelectivityc <- fisherySelectivityc #format(as.matrix(fisherySelectivityc),digits=5)
   fisherySelectivityd<- read.csv(paste0(path,"/fishing_selectivityd.csv"),header=TRUE,row.names = 1)
-  d$fisherySelectivityd <- format(as.matrix(fisherySelectivityd),digits=5)
+  d$fisherySelectivityd <- fisherySelectivityd #format(as.matrix(fisherySelectivityd),digits=5)
 
   # B0 - equilibrium biomass
   B0 <- read.csv(paste0(path,"/B0.csv"),header=TRUE,row.names = 1)
@@ -253,7 +254,9 @@ get_PinData <- function(path){
   # path <- paste0(getwd(),"/",options$pathToDataFiles)
   # list of species and guilds (Functional Groups)
   Y1N <- read.csv(paste0(path,"/observation_Y1N.csv"),header=TRUE,row.names=1)
-  p$Y1N <- unlist(format(as.matrix(Y1N),digits=7))
+  p$Y1N <- Y1N
+  #p$Y1N <- unlist(format(as.matrix(Y1N),digits=7))
+  #p$Y1N <- format(Y1N,digits=7)
 
   # redundant Avg recruitemtn and deviations
   redundantAvgRec <- read.csv(paste0(path,"/redundantAvgRecPinData.csv"),header=TRUE,row.names=1)
@@ -264,7 +267,7 @@ get_PinData <- function(path){
 
   # fishery catchability (q's)
   fisheryqs<- read.csv(paste0(path,"/fishing_q.csv"),header=TRUE,row.names = 1)
-  p$fisheryq<- unlist(format(as.matrix(fisheryqs),digits=7))
+  p$fisheryq<- fisheryqs #unlist(format(as.matrix(fisheryqs),digits=7))
   #p$fishery_q<- (as.table(as.matrix(fisheryqs)))
 
 
