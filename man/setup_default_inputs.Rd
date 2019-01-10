@@ -20,6 +20,6 @@ Default = "none" }
 \item{fillLength}{Integer: number of character that exist on a line in the output files. If too small. The data wrap to following line. This causes an error at run time}
 }
 \description{
-You must run this function to set up the list needed to pass to \code{\link{create_data_file}}.
+You must run this function to set up the list needed to pass to \code{\link{create_data_files}}.
 Once created any of the values can be changes to suit the intended model run
 }

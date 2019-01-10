@@ -1,6 +1,6 @@
 #' creates default inputs for use with \code{\link{create_data_files}}
 #'
-#' You must run this function to set up the list needed to pass to \code{\link{create_data_file}}.
+#' You must run this function to set up the list needed to pass to \code{\link{create_data_files}}.
 #' Once created any of the values can be changes to suit the intended model run
 #'
 #'
