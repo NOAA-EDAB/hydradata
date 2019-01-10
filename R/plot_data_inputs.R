@@ -387,19 +387,19 @@ plot_Foodweb <- function(outPath) {
 ### plots Y1N and corresponding starting biomass
 ### also plots length weight relationsships and bin widths
 # all connected
-plot_Y1N_Biomass_lengthweight_bins <- function(inPath,outPath) {
+plot_Y1N_Biomass_lengthweight_bins <- function(outPath) {
   cex <- 0.8
 
-  Y1N <- read.table(paste0(inPath,"observation_Y1N.csv"),sep=",",header=TRUE,row.names=1)
+  #Y1N <- read.table(paste0(inPath,"observation_Y1N.csv"),sep=",",header=TRUE,row.names=1)
 
-  out <- binWidths_Calc(inPath=inPath)
+  out <- binWidths_Calc()
   midPoints <- out$midPoints
   cumSumBinWidths <- out$cumSumBinWidths
 
-  singletons <- read.table(paste0(inPath,"singletons.csv"),sep=",",header=TRUE,row.names=1)
-  weightConversion <- singletons[which(row.names(singletons)=="wtconv"),1] # from grams
+  #singletons <- read.table(paste0(inPath,"singletons.csv"),sep=",",header=TRUE,row.names=1)
+  weightConversion <- wtconv # from grams
 
-  lengthWeight <- read.table(paste0(inPath,"lengthweight_species.csv"),sep=",",header=TRUE,row.names=1)
+  #lengthWeight <- read.table(paste0(inPath,"lengthweight_species.csv"),sep=",",header=TRUE,row.names=1)
 
   nSpecies <- length(row.names(Y1N))
   speciesNames <- row.names(Y1N)
@@ -427,8 +427,8 @@ plot_Y1N_Biomass_lengthweight_bins <- function(inPath,outPath) {
   par(mfrow=c(nSpecies/2,2),mar=c(2,4,0,4)+.0,oma=c(3,1,1,1)+0.0)
   for (isp in 1:nSpecies) {
     lengthOfFish <- seq(0,cumSumBinWidths[isp,nBins+1],1)
-    a <- lengthWeight$a[isp]
-    b <- lengthWeight$b[isp]
+    a <- lenwta[isp]
+    b <- lenwtb[isp]
     plot(lengthOfFish,a*lengthOfFish^b,type="l",ylab="",xlab="")
     if ((isp %% 2) == 1) {mtext(side=2,line=2.5,"weight (g)",cex=cex)}
     if ((isp==nSpecies) | (isp ==(nSpecies-1))) {mtext(side=1,line=2.5,cex=cex,"length (cm)")}
@@ -442,8 +442,8 @@ plot_Y1N_Biomass_lengthweight_bins <- function(inPath,outPath) {
   par(mfrow=c(nSpecies/2,2),mar=c(2,4,0,4)+.0,oma=c(3,1,1,1)+0.0)
 
   for (isp in 1:nSpecies) {
-    a <- lengthWeight$a[isp]
-    b <- lengthWeight$b[isp]
+    a <- lenwta[isp] # (lazy data)
+    b <- lenwtb[isp] # (lazy data)
 
     plot(1:nBins,Y1N[isp,],type="b",ylab="",xlab="")
     if ((isp %% 2) == 1) {mtext(side=2,line=2,"# individuals (mil)",cex=cex)}
@@ -462,15 +462,14 @@ plot_Y1N_Biomass_lengthweight_bins <- function(inPath,outPath) {
 }
 
 # fishing selectivities
-plot_Selectivities <- function(inPath,outPath) {
+plot_Selectivities <- function(outPath) {
   # selectivity
   # requires selectivity_c, selectivity_d and size bins
   png(paste0(outPath,"/Hydra_Selectivities.png"),width=8,height=11.5,units="in",res=300)
 
-  sel_c <- read.table(paste0(inPath,"fishing_selectivityc.csv"),sep=",",header=TRUE,row.names=1)
-
-  sel_d <- read.table(paste0(inPath,"fishing_selectivityd.csv"),sep=",",header=TRUE,row.names=1)
-  bins <- read.table(paste0(inPath,"length_sizebins.csv"),sep=",",header=TRUE)
+  sel_c <- fisherySelectivityc  # lazy data # read.table(paste0(inPath,"fishing_selectivityc.csv"),sep=",",header=TRUE,row.names=1)
+  sel_d <- fisherySelectivityd # lazy data   #  read.table(paste0(inPath,"fishing_selectivityd.csv"),sep=",",header=TRUE,row.names=1)
+  bins <- binwidth # lazy data #read.table(paste0(inPath,"length_sizebins.csv"),sep=",",header=TRUE)
   bins <- bins[,1:ncol(bins)-1]
   nFleets <- ncol(sel_c)
   nSpecies <- nrow(bins)
@@ -511,10 +510,10 @@ plot_Selectivities <- function(inPath,outPath) {
 }
 
 # effort by fleet
-plot_FishingEffort <- function(inPath,outPath) {
+plot_FishingEffort <- function(outPath) {
   ##########################################################################3
   #plot effort
-  obs_effort <- read.table(paste0(inPath,"observation_effort.csv"),sep=",",header=TRUE)
+  obs_effort <- t(observedEffort) #lazy data # read.table(paste0(inPath,"observation_effort.csv"),sep=",",header=TRUE)
   nFleets <- dim(obs_effort)[2]-1
   fleetNames <- colnames(obs_effort)
 
@@ -553,7 +552,8 @@ plot_FishingEffort <- function(inPath,outPath) {
 
   ############################################################################
   # plot fishing _q's
-  fishing_q <- read.table(paste0(inPath,"fishing_q.csv"),sep=",",row.names=1,header=TRUE)
+  #fishing_q <- read.table(paste0(inPath,"fishing_q.csv"),sep=",",row.names=1,header=TRUE)
+  fishing_q <- fisheryq # lazy data
   fleetNames <- colnames(fishing_q)
   nSpecies <- dim(fishing_q)[1]
   png(paste0(outPath,"/Hydra_FishingQ.png"),width=8,height=11.5,units="in",res=300)
@@ -598,13 +598,14 @@ plot_FishingEffort <- function(inPath,outPath) {
 }
 
 # species growth
-plot_Growth <- function(inPath,outPath) {
+plot_Growth <- function(outPath) {
   ##########################################################################3
   # plot growth curves
-  growth <- read.table(paste0(inPath,"growth_species.csv"),sep=",",row.names=1,header=TRUE)
-  growthBins <- read.table(paste0(inPath,"length_sizebins.csv"),sep=",",header=TRUE)
-  nSpecies <- dim(growth)[2]
-  speciesNames <- names(growth)
+  #growth <- read.table(paste0(inPath,"growth_species.csv"),sep=",",row.names=1,header=TRUE)
+  growthBins <- binwidth # lazy data read.table(paste0(inPath,"length_sizebins.csv"),sep=",",header=TRUE)
+  speciesNames <- row.names(binwidth)
+  nSpecies <- length(speciesNames)
+
   speciesNames[speciesNames=="goosefish"] <- "monkfish"
 
   png(paste0(outPath,"/Hydra_Growth.png"),width=8,height=11.5,units="in",res=300)
@@ -612,26 +613,26 @@ plot_Growth <- function(inPath,outPath) {
 
   growthFunctions <- c("na","exponential","na","von Bertalanffy")
 
-  maxLinf <- max(growth[3,])
+  maxLinf <- max(growthLinf)
   t <- seq(0,40,1)
   for (isp in 1:nSpecies) {
     growthThroughInterval1 <- growthBins[isp,1]
-    if(tail(growth[,isp],1) == 2) {# exponential
-      psi <- growth[1,isp]
-      kappa_r <- growth[2,isp]
+    if(growthType[isp] == 2) {# exponential
+      psi <- growthPsi[isp]
+      kappa_r <- growthKappa[isp]
       growthFunc <- psi*t^kappa_r
       delta_t <- (growthThroughInterval1/psi)^(1/kappa_r)
       func <- growthFunctions[2]
-    } else if (tail(growth[,isp],1) == 4) {# von Bert
-      k <- growth[4,isp]
-      linf <- growth[3,isp]
+    } else if (growthType[isp] == 4) {# von Bert
+      k <- growthK[isp]
+      linf <- growthLinf[isp]
       delta_t <- (1/k)*log(linf/(linf-growthThroughInterval1))
       growthFunc <- linf*(1-exp(-k*t))
       func <- growthFunctions[4]
     }
     plot(t,growthFunc,type="l",xlab="age",ylab="length",ylim=c(0,maxLinf))
     lines(rep(delta_t,2),c(0,linf),col="red",lty=2)
-    legend("topleft",legend=names(growth)[isp],bty="n",cex=1.5)
+    legend("topleft",legend=speciesNames[isp],bty="n",cex=1.5)
     legend("bottomright",legend=func,bty="n",cex=1)
 
   }
@@ -642,22 +643,22 @@ plot_Growth <- function(inPath,outPath) {
 }
 
 # step/ramp for assessment module
-plot_Assessment_Step <- function(inPath,outPath) {
-  ##############################################################################
+plot_Assessment_Step <- function(outPath) {
   # plot assessment thresholds - step function
   png(paste0(outPath,"/Hydra_Assessment_Thresholds.png"),width=8,height= 11.5,units="in",res=300)
 
-  thresholds <- read.table(paste0(inPath,"assessmentThresholds.csv"),sep=",",row.names=1,header=TRUE)
-  nExperiments <- dim(thresholds)[2]
+  #thresholds <- read.table(paste0(inPath,"assessmentThresholds.csv"),sep=",",row.names=1,header=TRUE)
+
+  nExperiments <- dim(exploitationOptions)[2] # lazy data
   nSteps <- dim(thresholds)[1]
   par(mfrow=c(nExperiments/2,2),mar=c(4,4,2,1)+.5,oma=c(1,1,1,1)+.0)
-  actionLevels <- as.numeric(rownames(thresholds))
+  actionLevels <- thresholds #as.numeric(rownames(thresholds))
   actionLevels <- head(actionLevels,-1) # removes last value
   for (iExp in 1:nExperiments) {
-    stepObj <- stepfun(actionLevels,thresholds[,iExp])
-    plot.stepfun(stepObj,ylim=c(0,max(thresholds)),main="" ,ylab = "Exploitation Rate",xlab="B/B0")
-    abline(thresholds[2,iExp],0,col="red")
-    legend("topleft",legend=paste0("Max rate = ",max(thresholds[,iExp])))
+    stepObj <- stepfun(actionLevels,exploitationOptions[,iExp])
+    plot.stepfun(stepObj,ylim=c(0,max(exploitationOptions)),main="" ,ylab = "Exploitation Rate",xlab="B/B0")
+    abline(exploitationOptions[2,iExp],0,col="red")
+    legend("topleft",legend=paste0("Max rate = ",max(exploitationOptions[,iExp])))
   }
 
   graphics.off()
