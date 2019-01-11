@@ -1,4 +1,7 @@
-# A plotting suite for Hydra:
+#' A plotting suite for Hydra.
+#' These functions comprise plotting routines for each component of the data
+#'
+#'This isnt exported with the package
 
 # plots Intake, stomach content,
 binWidths_Calc <- function(){

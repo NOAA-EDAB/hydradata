@@ -1,6 +1,6 @@
 #' Create data files (.dat and .pin) for use with multispecies model, Hydra.
 #'
-#' Initial data files have been lazily loaded. To view their contents please run the doc rmd file
+#' Initial data files have been lazily loaded. To view their contents please run the \code{\link{create_documentation}} rmd file
 #'
 #'@param listOfParameters see \code{\link{setup_default_inputs}}
 #'
@@ -9,9 +9,11 @@
 #'@section Output:
 #'
 #'Two data files are output. A ".dat" and a ".pin" file. These are required by the Hydra code to run. The name of the file is determined by the variable \code{outputFilename} in the
-#'list \code{listOfParameters}
+#'list \code{listOfParameters}. By default the files are saved in the current working directory. You can specify a differnt location in \code{listPfParameters}.
+#'See \code{\link{setup_default_inputs}}
 #'
-#' NOTE 4TH FLEET HAS NO EFFORT. HARD CODED TO OVERWRITE FILE. BEWARE
+#'
+#'
 #' @export
 
 #scenarioFlag="historical",temperatureFlag="true",scenarioType="fixed",exploitationRateFlag=30,assessmentSpeciesFlag="none",outputFileName="hydra_sim_guild_1_4"
