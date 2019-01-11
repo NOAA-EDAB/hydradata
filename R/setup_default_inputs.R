@@ -15,7 +15,7 @@
 #' \item{outputFilename}{Characher string: Name of the (.dat and .pin) output files. Default = "hydra_sim" }
 #' \item{temperatureFlag}{Charachter string: Determins whether to use the observed temperature data (true) or the mean (mean). Default = "true"}
 #' \item{fillLength}{Integer: number of character that exist on a line in the output files. If too small. The data wrap to following line. This causes an error at run time. Default = 2000}
-#' \item{outputDir}{Character string: Path to where output will be saved. Default = current working directory}
+#' \item{outDir}{Character string: Path to where output will be saved. Default = current working directory}
 #'
 #'@section Usage:
 #'
@@ -26,7 +26,7 @@
 #'
 #' @export
 
-setup_default_inputs <- function(outputDir = getwd()){
+setup_default_inputs <- function(outDir = getwd()){
 
   listOfParameters <- list()
   listOfParameters$scenarioFlag <- "historical"
@@ -36,7 +36,7 @@ setup_default_inputs <- function(outputDir = getwd()){
   listOfParameters$assessmentSpeciesFlag <- "none"
   listOfParameters$outputFilename <- "hydra_sim"
   listOfParameters$fillLength <- 2000 # length of line to write to. if not long enough data wraps to next line
-  listOfParameters$outputDir <- outputDir
+  listOfParameters$outDir <- outDir
 
   return(listOfParameters)
 

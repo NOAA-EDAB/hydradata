@@ -4,9 +4,9 @@
 \name{mshydradata}
 \alias{mshydradata}
 \alias{mshydradata-package}
-\title{mshydradata: easy manipulation of input data used in Hydra}
+\title{mshydradata: Manipulation of input data used in Hydra}
 \description{
-An implementation of the LeMANS model as described in the Hall et al (2006) and Rochet et al (2011) publications.
+Tools to aid in quickly changing and documenting input parameters to Hydra
 }
 \details{
 \itemize{
@@ -15,5 +15,5 @@ An implementation of the LeMANS model as described in the Hall et al (2006) and 
 \item creat .dat and .pin files used in running the multisecies model "Hydra"
 }
 
-To learn more about using \code{mshydradata}, start with the vignette: \code{browseVignettes(package="mshydradata")}
+To learn more about using \code{mshydradata}, start with the vignette: \code{browseVignettes(package="mshydradata")} or click \code{index} link below
 }

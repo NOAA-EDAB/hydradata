@@ -4,7 +4,7 @@
 \alias{setup_default_inputs}
 \title{creates default input values for data file creation}
 \usage{
-setup_default_inputs(outputDir = getwd())
+setup_default_inputs(outDir = getwd())
 }
 \value{
 A list containing:
@@ -18,7 +18,7 @@ Default = "none" }
 \item{outputFilename}{Characher string: Name of the (.dat and .pin) output files. Default = "hydra_sim" }
 \item{temperatureFlag}{Charachter string: Determins whether to use the observed temperature data (true) or the mean (mean). Default = "true"}
 \item{fillLength}{Integer: number of character that exist on a line in the output files. If too small. The data wrap to following line. This causes an error at run time. Default = 2000}
-\item{outputDir}{Character string: Path to where output will be saved. Default = current working directory}
+\item{outDir}{Character string: Path to where output will be saved. Default = current working directory}
 }
 \description{
 You must run this function to set up the list needed to pass to \code{\link{create_data_files}}.
