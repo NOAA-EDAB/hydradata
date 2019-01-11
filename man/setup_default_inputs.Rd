@@ -2,24 +2,33 @@
 % Please edit documentation in R/setup_default_inputs.R
 \name{setup_default_inputs}
 \alias{setup_default_inputs}
-\title{creates default inputs for use with \code{\link{create_data_files}}}
+\title{creates default input values for data file creation}
 \usage{
-setup_default_inputs()
+setup_default_inputs(outputDir = getwd())
 }
 \value{
 A list containing:
 
 \item{scenarioFlag}{Character string: Speciying a scenario of either "historical" or "assessment". Default = "historical"}
-\item{scenarioType}{Charachter string: Type of assessment scenario. "fixed" or "ramp". (Only used if scenarioFlag is "assessment"). Default = historical"}
-\item{exploitationRate}{Integer: The level of the maximum exploitation in either "ramp" or "fixed". (valid choices c(5,10,15,20,25,30)).(Only used if scenarioFlag is "assessment") Default value = 30}
+\item{scenarioType}{Charachter string: Type of assessment scenario. "fixed" or "ramp". (Only used if scenarioFlag is "assessment"). Default = "fixed"}
+\item{exploitationRate}{Integer: The level of the maximum exploitation in either "ramp" or "fixed". Valid choices are 5,10,15,20,25,30.(Only used if scenarioFlag is "assessment"). Default value = 30}
 \item{assessmentSpeciesFlag}{Charachter string: The level of species protection "none", "low", "high". (Only used if scenarioFlag is "assessment").
 "none" = specific species are not protected during an assessment, "low" = species are protected at same level as the complex, "high" = elasmobranchs get increased protection".
 Default = "none" }
-\item{outputFilename}{Characher string: Name of the (.dat and .pin) output files. Default = "hydraSim" }
-\item{temperatureFlag}{Charachter string: Determins whether to use the observed temperature data (true) or the mean (mean)}
-\item{fillLength}{Integer: number of character that exist on a line in the output files. If too small. The data wrap to following line. This causes an error at run time}
+\item{outputFilename}{Characher string: Name of the (.dat and .pin) output files. Default = "hydra_sim" }
+\item{temperatureFlag}{Charachter string: Determins whether to use the observed temperature data (true) or the mean (mean). Default = "true"}
+\item{fillLength}{Integer: number of character that exist on a line in the output files. If too small. The data wrap to following line. This causes an error at run time. Default = 2000}
+\item{outputDir}{Character string: Path to where output will be saved. Default = current working directory}
 }
 \description{
 You must run this function to set up the list needed to pass to \code{\link{create_data_files}}.
 Once created any of the values can be changes to suit the intended model run
 }
+\section{Usage}{
+
+
+Run this function to initially set up the list. If any changes are needed, make them.
+If any other changes are requrired to other parts of the input data, also make those changes,
+then run \code{\link{create_data_files}} to generate the .dat and .pin files required for the model run.
+}
+

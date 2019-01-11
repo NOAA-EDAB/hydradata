@@ -1,7 +1,7 @@
-#' Calls each plotting routine in order to plot specific set of inputs used to run Hydra
-#'
-#'This is an internal function that isn't exported
-#'
+# Calls each plotting routine in order to plot specific set of inputs used to run Hydra
+#
+#This is an internal function that isn't exported
+#
 
 
 
