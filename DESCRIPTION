@@ -18,4 +18,5 @@ Imports: graphics,
     igraph,
     NetIndices,
     bipartite,
-    viridis
+    viridis,
+    here
