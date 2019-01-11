@@ -20,6 +20,7 @@
 
 create_data_files <- function(listOfParameters){
 
+  if (!exists(listOfParameters$outDir)) {stop(paste0("Directory ",listOfParameters$outDir," doesn't exist. Create it!"))}
   # complete error checks to make sure all data conforms
   ######################################
  ###### NOT DONE YET #######################
