@@ -109,7 +109,7 @@ plot_CovariateData <- function(outPath) {
 }
 
 # size preferenmce * weight ratio
-plot_SizePreference_weightRatio <- function(inPath,outPath) {
+plot_SizePreference_weightRatio <- function(outPath) {
   #sizePref <- as.data.frame(t(read.table(paste0(inPath,"mortality_M2sizePreference.csv"),sep=",",row.names=1,header=TRUE)))
   speciesNames <- colnames(M2sizePrefMu)
   speciesNames[speciesNames=="goosefish"] <- "monkfish"
@@ -183,7 +183,7 @@ plot_SizePreference_weightRatio <- function(inPath,outPath) {
 }
 
 # plots Fecundity
-plot_Maturity <- function(inPath,outPath) {
+plot_Maturity <- function(outPath) {
   maturity_cov <- maturityCov #(lazy data)
   maturity_effects <- maturityCovEffects #(lazy data)
 
@@ -406,6 +406,7 @@ plot_Y1N_Biomass_lengthweight_bins <- function(outPath) {
   nBins <- dim(Y1N)[2]
 
   ## binwidths
+  #png(system.file("rmd","Hydra_binWidths.png",package="mshydradata"),width=11.5,height=8,units="in",res=300)
   png(paste0(outPath,"/Hydra_binWidths.png"),width=11.5,height=8,units="in",res=300)
   par(oma=c(1,4,1,2))
   for (isp in 1:nSpecies) {

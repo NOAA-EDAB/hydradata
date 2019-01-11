@@ -175,13 +175,13 @@ write_DatFile <- function(d,options,listOfParameters) {
   cat("#   init_3darray obs_survey_biomass(1,Nareas,1,Nspecies,1,Nyrs) ",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#   THESE ARE FROM ATLANTIS AND SHOULD NOT BE USED IN FITTING: REPLACE WITH SURVEY DATA",file=outputFileName,fill=TRUE,append=TRUE)
   for (idata in 1:Nspecies){
-    cat(c(" ",observedBiomass[idata,-1]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+    cat(c(" ",observedBiomass[idata+1,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
   # observed catch
   cat("#   init_3darray obs_catch_biomass(1,Nareas,1,Nspecies,1,Nyrs) ",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#   THESE ARE FROM ASSESSMENTS see Catches.xls placeholder for real catch data",file=outputFileName,fill=TRUE,append=TRUE)
   for (idata in 1:Nspecies){
-    cat(c(" ",observedCatch[idata,-1]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+    cat(c(" ",observedCatch[idata+1,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
   # observed effort
   cat("#  init_3darray obs_effort(1,Nareas,1,Nfleets,1,Nyrs)  ",file=outputFileName,fill=TRUE,append=TRUE)
@@ -192,7 +192,7 @@ write_DatFile <- function(d,options,listOfParameters) {
     cat("#  Observed effort. No assessment",file=outputFileName,fill=TRUE,append=TRUE)
   }
   for (idata in 1:Nfleets){
-    cat(c(" ",observedEffort[idata,-1]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+    cat(c(" ",observedEffort[idata+1,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
   # intake stomach content
