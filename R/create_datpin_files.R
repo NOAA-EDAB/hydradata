@@ -18,7 +18,7 @@
 
 #scenarioFlag="historical",temperatureFlag="true",scenarioType="fixed",exploitationRateFlag=30,assessmentSpeciesFlag="none",outputFileName="hydra_sim_guild_1_4"
 
-create_data_files <- function(listOfParameters){
+create_datpin_files <- function(listOfParameters){
 
   if (!exists(listOfParameters$outDir)) {stop(paste0("Directory ",listOfParameters$outDir," doesn't exist. Create it!"))}
   # complete error checks to make sure all data conforms
