@@ -6,9 +6,9 @@ Details of the original model can be found in:
 
 Gaichas et al. (2017). Combining stock, multispecies, and ecosystem level fishery objectives within an operational management procedure: simulation to start the conversation. ICES 74:2, 552-565. doi:10.1093/icesjms/fsw119
 
-This model is data intensive. It requires 2 data files (.dat and .pin) to run. Both are text files. 
+This multispecies model is data intensive. It is coded in ADMB and it requires two data files (.dat and .pin) to run. Both are text files. 
 
-#Features
+## Features
 
 * Easy manipulation of underlying data
 * Easy creation of .dat and .pin files based on user options
