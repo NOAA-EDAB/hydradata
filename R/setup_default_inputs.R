@@ -32,7 +32,7 @@ setup_default_inputs <- function(outDir = getwd()){
   listOfParameters$scenarioFlag <- "historical"
   listOfParameters$temperatureFlag <- "true"
   listOfParameters$scenarioType <- "fixed"
-  listOfParameters$exploitationRate <- 30
+  listOfParameters$maxExploitationRate <- 30
   listOfParameters$assessmentSpeciesFlag <- "none"
   listOfParameters$outputFilename <- "hydra_sim"
   listOfParameters$fillLength <- 2000 # length of line to write to. if not long enough data wraps to next line

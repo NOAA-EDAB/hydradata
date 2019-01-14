@@ -1,6 +1,10 @@
 # A plotting suite for Hydra.
 #These functions comprise plotting routines for each component of the data
 #
+# #############################################################################
+# A complete rework is required. Code is clunky and prone to issues when expand
+###############################################################################
+#
 #This isnt exported with the package
 
 # plots Intake, stomach content,
