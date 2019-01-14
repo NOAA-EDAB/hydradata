@@ -8,6 +8,9 @@ create_datpin_files(listOfParameters, hydraData)
 }
 \arguments{
 \item{listOfParameters}{see \code{\link{setup_default_inputs}}}
+
+\item{hydraData}{A data set comprising all necessary inputs. This data set can be the lazily loaded data set or it can be modified in any way
+to represent a faux assessment. See \code{\link{hydraData}} for details}
 }
 \value{
 Nothing
