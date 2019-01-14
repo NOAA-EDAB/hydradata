@@ -4,7 +4,7 @@
 \alias{create_datpin_files}
 \title{Create data files (.dat and .pin) for use with multispecies model, Hydra.}
 \usage{
-create_datpin_files(listOfParameters)
+create_datpin_files(listOfParameters, hydraData)
 }
 \arguments{
 \item{listOfParameters}{see \code{\link{setup_default_inputs}}}

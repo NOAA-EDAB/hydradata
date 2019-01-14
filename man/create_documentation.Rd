@@ -4,7 +4,8 @@
 \alias{create_documentation}
 \title{Renders .rmd file to display all model data inputs}
 \usage{
-create_documentation(outFile = "documentation.html", outDir = getwd())
+create_documentation(outFile = "documentation.html", outDir = getwd(),
+  data = hydraData)
 }
 \arguments{
 \item{outFile}{Name of the html file to be output (Default = documentation.html)}

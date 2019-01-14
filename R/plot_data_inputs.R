@@ -4,9 +4,9 @@
 #This isnt exported with the package
 
 # plots Intake, stomach content,
-binWidths_Calc <- function(){
+binWidths_Calc <- function(inputData){
   #binWidths <- read.table(paste0(inPath,"length_sizebins.csv"),sep=",",header=TRUE)
-  binWidths <- binwidth #lazy data
+  binWidths <- inputData$binwidth
   # finds midpoints of bins for biomass plot
   #binWidths <- t(head(t(binWidths),-1))
   #class(binWidths) <- "numeric"
@@ -21,18 +21,18 @@ binWidths_Calc <- function(){
 }
 
 # plots the rates of survival and discrad for species where entries are no zero
-plot_Discards_Survival <- function(outPath){
+plot_Discards_Survival <- function(outPath,inputData){
   #singles <- read.table(paste0(inPath,"singletons.csv"),sep=",",row.names=1,header=FALSE)
   #discards <- read.csv(paste0(inPath,"fishing_discards.csv"),sep=",",skip=3,header=TRUE,row.names=1)
   #survival <- read.csv(paste0(inPath,"fishing_discardsSurvival.csv"),sep=",",skip=3,header=TRUE,row.names=1)
   #singletons <- simplify2array(singles)
   #names(singletons) <- row.names(singles)
-  nFleets <- Nfleets
-  nSpecies <- Nspecies
-  nClass <- Nsizebins
+  nFleets <- inputData$Nfleets
+  nSpecies <- inputData$Nspecies
+  nClass <- inputData$Nsizebins
 
-  discards <- discardCoef
-  survival <- discardSurvival
+  discards <- inputData$discardCoef
+  survival <- inputData$discardSurvival
 
   for (isp in 1:nSpecies) {
     # take in chunks of nFleets
@@ -40,29 +40,22 @@ plot_Discards_Survival <- function(outPath){
     iend <- istart+nFleets-1
     speciesDataD <- discards[istart:iend,]
     if(sum(as.numeric(as.matrix(speciesDataD))) > 0) {
-      print(speciesDataD)
       speciesGearName <- row.names(speciesDataD)[1]
-      print(speciesGearName)
       numLetters <- nchar(speciesGearName)
       speciesName <- substr(speciesGearName,1,numLetters-2)
       gearType <- substr(speciesGearName,numLetters-1,numLetters)
-      print(speciesName)
-      print(gearType)
       matplot(t(speciesDataD),type="l")
-
-   #   print(survival[istart:iend,])
-
     }
 
   }
 }
 
 
-plot_observed_Biomass_Catch <- function(outPath){
+plot_observed_Biomass_Catch <- function(outPath,inputData){
   #biomass <- read.table(paste0(inPath,"observation_biomass.csv"),sep=",",header=TRUE)
-  biomass <- t(observedBiomass)
+  biomass <- t(inputData$observedBiomass)
   #catch <- read.table(paste0(inPath,"observation_catch.csv"),sep=",",header=TRUE)
-  catch <- t(observedCatch)
+  catch <- t(inputData$observedCatch)
   nCols <- dim(biomass)[2]
   png(paste0(outPath,"/Hydra_Biomass.png"),width=11.5,height=8,units="in",res=300)
   par(oma=c(1,4,1,2))
@@ -81,18 +74,18 @@ plot_observed_Biomass_Catch <- function(outPath){
 }
 
 # plots all covariate data
-plot_CovariateData <- function(outPath) {
+plot_CovariateData <- function(outPath,inputData) {
   #growthCov <- read.table(paste0(inPath,"growth_covariates.csv"),sep=",",header=TRUE)
   #maturityCov <- read.table(paste0(inPath,"maturity_covariates.csv"),sep=",",header=TRUE)
   #recruitmentCov <- read.table(paste0(inPath,"recruitment_covariates.csv"),sep=",",header=TRUE)
-  growthEffects <- growthCovEffects #read.table(paste0(inPath,"growth_covariateEffects.csv"),sep=",",header=TRUE)
-  maturityEffects <- maturityCovEffects #read.table(paste0(inPath,"maturity_covariateEffects.csv"),sep=",",header=TRUE)
-  recruitmentEffects <- recruitCovEffects #read.table(paste0(inPath,"recruitment_covariateEffects.csv"),sep=",",header=TRUE)
+  growthEffects <- inputData$growthCovEffects #read.table(paste0(inPath,"growth_covariateEffects.csv"),sep=",",header=TRUE)
+  maturityEffects <- inputData$maturityCovEffects #read.table(paste0(inPath,"maturity_covariateEffects.csv"),sep=",",header=TRUE)
+  recruitmentEffects <- inputData$recruitCovEffects #read.table(paste0(inPath,"recruitment_covariateEffects.csv"),sep=",",header=TRUE)
   nSpecies <- dim(growthEffects)[1]
 
 
   effects <- cbind(growthEffects,maturityEffects,recruitmentEffects)
-  covariates <- t(rbind(growthCov,maturityCov,recruitmentCov))
+  covariates <- t(rbind(inputData$growthCov,inputData$maturityCov,inputData$recruitmentCov))
   names(covariates) <- c("temperature(Growth)","maturity","recruitment")
   nCovs <- dim(covariates)[2]
 
@@ -112,17 +105,16 @@ plot_CovariateData <- function(outPath) {
 }
 
 # size preferenmce * weight ratio
-plot_SizePreference_weightRatio <- function(outPath) {
+plot_SizePreference_weightRatio <- function(outPath,inputData) {
   #sizePref <- as.data.frame(t(read.table(paste0(inPath,"mortality_M2sizePreference.csv"),sep=",",row.names=1,header=TRUE)))
-  speciesNames <- colnames(M2sizePrefMu)
+  speciesNames <- colnames(inputData$M2sizePrefMu)
   speciesNames[speciesNames=="goosefish"] <- "monkfish"
   nSpecies <- length(speciesNames)
 
   # weight ratio
-  out <- binWidths_Calc()
+  out <- binWidths_Calc(inputData)
   midPoints <- out$midPoints
   nClass <- out$nClass
-
 
   png(paste0(outPath,"/Hydra_SizePreference.png"),width=8,height= 11.5,units="in",res=300)
   par(mfrow=c(nSpecies/2,2),mar=c(0,2,1,1)+0.75,oma=c(3,1,1,1)+.5)
@@ -130,8 +122,8 @@ plot_SizePreference_weightRatio <- function(outPath) {
   weightRatio <- seq(0.0001,10,.0001)
   meanSizePreference <- vector(mode="numeric",length = nSpecies)
   for (isp in 1:nSpecies) {
-    meanlog <- M2sizePrefMu[isp]
-    sdlog <- M2sizePrefSigma[isp]
+    meanlog <- inputData$M2sizePrefMu[isp]
+    sdlog <- inputData$M2sizePrefSigma[isp]
 
     pdfLogN <- (1/(weightRatio*sdlog*sqrt(2*pi))) *exp(-((log(weightRatio)-meanlog)^2)/(2*sdlog^2))
     meanSizePreference[isp] <- weightRatio[which(max(pdfLogN)==pdfLogN)]
@@ -146,7 +138,7 @@ plot_SizePreference_weightRatio <- function(outPath) {
 
   # weight ratio is calculated for each pair of species. However some species dont interact .We only print ratios of predators
   #foodweb <- as.matrix(read.table(paste0(inPath,"foodweb.csv"),sep=",",header=TRUE,row.names=1))
-  predators <- which(colSums(foodweb)>0)
+  predators <- which(colSums(inputData$foodweb)>0)
   nPredators <- length(predators)
 
   # calculate weight at each size class for each species
@@ -154,14 +146,14 @@ plot_SizePreference_weightRatio <- function(outPath) {
 
   weight <- vector(mode = "list", length = nSpecies)
   for (isp in 1:nSpecies) {
-    a <- lenwta[isp]
-    b <- lenwtb[isp]
+    a <- inputData$lenwta[isp]
+    b <- inputData$lenwtb[isp]
     weight[[isp]] <- a*midPoints[isp,]^b
   }
   # for each predator we find ratios for each prey and plot
   for (isp in 1:nPredators) {
     ipred <- predators[isp]
-    prey <- which(as.logical(foodweb[,ipred]))
+    prey <- which(as.logical(inputData$foodweb[,ipred]))
     preyNames <- speciesNames[prey]
     nPrey <- length(prey)
     png(paste0(outPath,"/Hydra_weightRatio_",speciesNames[ipred],".png"),width=8,height= 11.5,units="in",res=300)
@@ -186,15 +178,15 @@ plot_SizePreference_weightRatio <- function(outPath) {
 }
 
 # plots Fecundity
-plot_Maturity <- function(outPath) {
-  maturity_cov <- maturityCov #(lazy data)
-  maturity_effects <- maturityCovEffects #(lazy data)
+plot_Maturity <- function(outPath,inputData) {
+  maturity_cov <- inputData$maturityCov #(lazy data)
+  maturity_effects <- inputData$maturityCovEffects #(lazy data)
 
-  speciesNames <- names(maturityNu)
+  speciesNames <- names(inputData$maturityNu)
   speciesNames[speciesNames=="goosefish"] <- "monkfish"
   nSpecies <- length(speciesNames)
 
-  out <- binWidths_Calc()
+  out <- binWidths_Calc(inputData)
   midPoints <- out$midPoints
   nClass <- out$nClass
 
@@ -202,8 +194,8 @@ plot_Maturity <- function(outPath) {
   par(mfrow=c(nSpecies/2,2),mar=c(0,2,1,1)+0.75,oma=c(3,1,1,1)+.5)
 
   for (isp in 1:nSpecies) {
-    nu <- maturityNu[isp]
-    omega <- maturityOmega[isp]
+    nu <- inputData$maturityNu[isp]
+    omega <- inputData$maturityOmega[isp]
     maturityCalc <- 1/(1+exp(-(nu + omega*midPoints[isp,])))
     if (speciesNames[isp]=="spinydog") {maturityCalc=c(rep(0,nClass-1),1)} # hardcoded in ADMB
     plot(midPoints[isp,],maturityCalc,type="b")
@@ -217,18 +209,18 @@ plot_Maturity <- function(outPath) {
 }
 
 #  intake
-plot_Intake <- function(outPath) {
-  speciesNames <- names(intakeAlpha)
+plot_Intake <- function(outPath,inputData) {
+  speciesNames <- names(inputData$intakeAlpha)
   nSpecies <- length(speciesNames)
-  nClasses <- dim(intakeStomach)[2]
+  nClasses <- dim(inputData$intakeStomach)[2]
 
   png(paste0(outPath,"/Hydra_Intake.png"),width=8,height= 11.5,units="in",res=300)
   par(mfrow=c(nSpecies/2,2),mar=c(0,2,1,1)+0.75,oma=c(3,1,1,1)+.5)
   temperature <- seq(from=7.97, to=9.97, by=.01)
   for (isp in 1:nSpecies) {
-    alpha <- intakeAlpha[isp]
-    beta <- intakeBeta[isp]
-    StomachContent <- intakeStomach[isp,]
+    alpha <- inputData$intakeAlpha[isp]
+    beta <- inputData$intakeBeta[isp]
+    StomachContent <- inputData$intakeStomach[isp,]
     IntakeCalc <- 24*alpha*exp(beta*temperature)
     minI <- min(IntakeCalc)*min(StomachContent)
     maxI <- max(IntakeCalc)*max(StomachContent)
@@ -254,14 +246,14 @@ plot_Intake <- function(outPath) {
 }
 
 # plots Fecundity
-plot_Fecundity <- function(outPath) {
+plot_Fecundity <- function(outPath,inputData) {
   #fecundity <- as.data.frame(t(read.table(paste0(inPath,"fecundity_species.csv"),sep=",",row.names=1,header=TRUE)))
-  fecundity_theta <- fecundityTheta # (lazy data)
+  fecundity_theta <- inputData$fecundityTheta # (lazy data)
 
-  out <- binWidths_Calc()
+  out <- binWidths_Calc(inputData)
   midPoints <- out$midPoints
 
-  speciesNames <- names(fecundityd)
+  speciesNames <- names(inputData$fecundityd)
   #fecundity_theta <- as.numeric(fecundity_theta[,-1])
   speciesNames[speciesNames=="goosefish"] <- "monkfish"
   nSpecies <- length(speciesNames)
@@ -270,7 +262,7 @@ plot_Fecundity <- function(outPath) {
   par(mfrow=c(nSpecies/2,2),mar=c(0,2,1,1)+0.75,oma=c(3,1,1,1)+.5)
 
   for (isp in 1:nSpecies) {
-    fecund <- fecundityd[isp]*as.numeric(fecundity_theta[isp,])*(midPoints[isp,]^fecundityh[isp])
+    fecund <- inputData$fecundityd[isp]*as.numeric(fecundity_theta[isp,])*(midPoints[isp,]^inputData$fecundityh[isp])
     plot(midPoints[isp,],fecund,main="",type = "b")
     legend("topleft",legend=speciesNames[isp])
   }
@@ -282,11 +274,12 @@ plot_Fecundity <- function(outPath) {
 
 
 # plots all paramaterized versions of SR. Shepher, BH, ricker, segmented etc
-plot_StockRecruitment <- function(outPath) {
+plot_StockRecruitment <- function(outPath,inputData) {
   ##########################################################################3
   # plot stock recruitment
   #SR <- read.table(paste0(inPath,"recruitment_species.csv"),sep=",",row.names=1,header=TRUE)
-  speciesNames <- names(recType)
+  recTypes <- inputData$recType
+  speciesNames <- names(recTypes)
   speciesNames[speciesNames=="goosefish"] <- "monkfish"
   nSpecies <- length(speciesNames)
 
@@ -296,9 +289,10 @@ plot_StockRecruitment <- function(outPath) {
     png(paste0(outPath,"/Hydra_StockRecruitment.png"),width=8,height= 11.5,units="in",res=300)
     par(mfrow=c(nSpecies/2,2),mar=c(0,2,1,1)+0.75,oma=c(3,1,1,1)+.5)
 
+    attach(inputData)
     for (isp in 1:nSpecies) {
 #      currentType <- SR_types[SR["type",isp]]
-      currentType <- SR_types[recType[isp]]
+      currentType <- SR_types[recTypes[isp]]
       assign("tempAlpha",paste0("alpha",currentType))
       alpha <- eval(as.name(tempAlpha))[isp]
 
@@ -307,7 +301,6 @@ plot_StockRecruitment <- function(outPath) {
 
       assign("tempShape",paste0("shape",currentType))
       shape <- eval(as.name(tempShape))[isp]
-
 
       breakpoint <- shape # for segmented
       SSB <- seq(0,2.5*breakpoint,breakpoint)
@@ -318,6 +311,7 @@ plot_StockRecruitment <- function(outPath) {
       legend("topleft",legend=speciesNames[isp],bty="n",cex=1.5)
       legend("bottomright",legend=currentType,bty="n",cex=1)
     }
+    detach(inputData)
     mtext("SSB",line = 1.7,outer=T, side=1,cex = 1.5)
     mtext("Recruitment",line = -.5,outer=T, side=2,cex = 1.5)
     graphics.off()
@@ -325,8 +319,8 @@ plot_StockRecruitment <- function(outPath) {
 
 
 # plots observed temperature
-plot_Temperature <- function(outPath) {
-  temperature <- observedTemperature #read.table(paste0(inPath,"observation_temperature.csv"),sep=",",header=TRUE)
+plot_Temperature <- function(outPath,inputData) {
+  temperature <- inputData$observedTemperature #read.table(paste0(inPath,"observation_temperature.csv"),sep=",",header=TRUE)
   png(paste0(outPath,"/Hydra_Temperature.png"),width=11.5,height=8,units="in",res=300)
   par(oma=c(1,4,1,2))
   plot(temperature["year",],temperature["temperature",], type="b",xlab="Year",ylab = "Temperature ('C)")
@@ -334,15 +328,17 @@ plot_Temperature <- function(outPath) {
 }
 
 # plots fooweb structure in matrix and graph format
-plot_Foodweb <- function(outPath) {
+plot_Foodweb <- function(outPath,inputData) {
   #foodweb <- as.matrix(read.table(paste0(inPath,"foodweb.csv"),sep=",",header=TRUE,row.names=1))
-  speciesnames <- speciesList #read.table(paste0(inPath,"speciesList.csv"),sep=",",header=TRUE)
-  guilds <- unique(as.data.frame(cbind(guildNames,guildMembership))) # (lazy data)
+  speciesnames <- inputData$speciesList #read.table(paste0(inPath,"speciesList.csv"),sep=",",header=TRUE)
+  guilds <- unique(as.data.frame(cbind(inputData$guildNames,inputData$guildMembership))) # (lazy data)
+  names(guilds) <- c("guildNames","guildMembership")
   guilds$guildMembership <- as.integer(guilds$guildMembership)
   guilds <- guilds[with(guilds,order(guildMembership)),]
   nGuilds <- dim(guilds)[1]
   colorVec <- viridis::viridis(nGuilds)
 
+  foodweb <- inputData$foodweb
   web <- igraph::graph_from_adjacency_matrix(foodweb,mode="directed") #(lazy data)
   # average-linkage clustering method
   #jaccard <- similarity(web,vids=V(web),mode="all",loops = TRUE,method="jaccard")
@@ -357,10 +353,10 @@ plot_Foodweb <- function(outPath) {
   for (isp in 1:nSpecies) {
     #ind <- which(names(igraph::V(web)[isp]) == speciesList$species)
     ind <- which(names(igraph::V(web)[isp]) == speciesnames)
-    igraph::V(web)$guildmember[isp] <- guildMembership[ind]
-    igraph::V(web)$guild[isp] <- as.character(guildNames[ind])
-    igraph::V(web)$color[isp] <- colorVec[guildMembership[isp]]
-    igraph::V(web)$predPrey[isp] <- predOrPrey[isp]
+    igraph::V(web)$guildmember[isp] <- inputData$guildMembership[ind]
+    igraph::V(web)$guild[isp] <- as.character(inputData$guildNames[ind])
+    igraph::V(web)$color[isp] <- colorVec[inputData$guildMembership[isp]]
+    igraph::V(web)$predPrey[isp] <- inputData$predOrPrey[isp]
   }
 
   l <- igraph::layout_with_lgl(web)
@@ -390,23 +386,23 @@ plot_Foodweb <- function(outPath) {
 ### plots Y1N and corresponding starting biomass
 ### also plots length weight relationsships and bin widths
 # all connected
-plot_Y1N_Biomass_lengthweight_bins <- function(outPath) {
+plot_Y1N_Biomass_lengthweight_bins <- function(outPath,inputData) {
   cex <- 0.8
 
   #Y1N <- read.table(paste0(inPath,"observation_Y1N.csv"),sep=",",header=TRUE,row.names=1)
 
-  out <- binWidths_Calc()
+  out <- binWidths_Calc(inputData)
   midPoints <- out$midPoints
   cumSumBinWidths <- out$cumSumBinWidths
 
   #singletons <- read.table(paste0(inPath,"singletons.csv"),sep=",",header=TRUE,row.names=1)
-  weightConversion <- wtconv # from grams
+  weightConversion <- inputData$wtconv # from grams
 
   #lengthWeight <- read.table(paste0(inPath,"lengthweight_species.csv"),sep=",",header=TRUE,row.names=1)
 
-  nSpecies <- length(row.names(Y1N))
-  speciesNames <- row.names(Y1N)
-  nBins <- dim(Y1N)[2]
+  nSpecies <- length(row.names(inputData$Y1N))
+  speciesNames <- row.names(inputData$Y1N)
+  nBins <- dim(inputData$Y1N)[2]
 
   ## binwidths
   #png(system.file("rmd","Hydra_binWidths.png",package="mshydradata"),width=11.5,height=8,units="in",res=300)
@@ -431,8 +427,8 @@ plot_Y1N_Biomass_lengthweight_bins <- function(outPath) {
   par(mfrow=c(nSpecies/2,2),mar=c(2,4,0,4)+.0,oma=c(3,1,1,1)+0.0)
   for (isp in 1:nSpecies) {
     lengthOfFish <- seq(0,cumSumBinWidths[isp,nBins+1],1)
-    a <- lenwta[isp]
-    b <- lenwtb[isp]
+    a <- inputData$lenwta[isp]
+    b <- inputData$lenwtb[isp]
     plot(lengthOfFish,a*lengthOfFish^b,type="l",ylab="",xlab="")
     if ((isp %% 2) == 1) {mtext(side=2,line=2.5,"weight (g)",cex=cex)}
     if ((isp==nSpecies) | (isp ==(nSpecies-1))) {mtext(side=1,line=2.5,cex=cex,"length (cm)")}
@@ -446,16 +442,16 @@ plot_Y1N_Biomass_lengthweight_bins <- function(outPath) {
   par(mfrow=c(nSpecies/2,2),mar=c(2,4,0,4)+.0,oma=c(3,1,1,1)+0.0)
 
   for (isp in 1:nSpecies) {
-    a <- lenwta[isp] # (lazy data)
-    b <- lenwtb[isp] # (lazy data)
+    a <- inputData$lenwta[isp] # (lazy data)
+    b <- inputData$lenwtb[isp] # (lazy data)
 
-    plot(1:nBins,Y1N[isp,],type="b",ylab="",xlab="")
+    plot(1:nBins,inputData$Y1N[isp,],type="b",ylab="",xlab="")
     if ((isp %% 2) == 1) {mtext(side=2,line=2,"# individuals (mil)",cex=cex)}
     if ((isp==nSpecies) | (isp ==(nSpecies-1))) {mtext(side=1,line=2,cex=cex,"size class")}
     par(new=T)
     # biomass part
     weightG <- a*midPoints[isp,]^b
-    plot(1:nBins,weightConversion*Y1N[isp,]*weightG,axes=F,xlab=NA,ylab=NA,type="l",lty=2)
+    plot(1:nBins,weightConversion*inputData$Y1N[isp,]*weightG,axes=F,xlab=NA,ylab=NA,type="l",lty=2)
     axis(side=4)
     if ((isp %% 2) == 0) {mtext(side=4,line=2.2,cex=cex,"Biomass (g)")}
     legend("topleft",legend=c(speciesNames[isp], "Y1N","Biomass"),
@@ -466,14 +462,14 @@ plot_Y1N_Biomass_lengthweight_bins <- function(outPath) {
 }
 
 # fishing selectivities
-plot_Selectivities <- function(outPath) {
+plot_Selectivities <- function(outPath,inputData) {
   # selectivity
   # requires selectivity_c, selectivity_d and size bins
   png(paste0(outPath,"/Hydra_Selectivities.png"),width=8,height=11.5,units="in",res=300)
 
-  sel_c <- fisherySelectivityc  # lazy data # read.table(paste0(inPath,"fishing_selectivityc.csv"),sep=",",header=TRUE,row.names=1)
-  sel_d <- fisherySelectivityd # lazy data   #  read.table(paste0(inPath,"fishing_selectivityd.csv"),sep=",",header=TRUE,row.names=1)
-  bins <- binwidth # lazy data #read.table(paste0(inPath,"length_sizebins.csv"),sep=",",header=TRUE)
+  sel_c <- inputData$fisherySelectivityc  # lazy data # read.table(paste0(inPath,"fishing_selectivityc.csv"),sep=",",header=TRUE,row.names=1)
+  sel_d <- inputData$fisherySelectivityd # lazy data   #  read.table(paste0(inPath,"fishing_selectivityd.csv"),sep=",",header=TRUE,row.names=1)
+  bins <- inputData$binwidth # lazy data #read.table(paste0(inPath,"length_sizebins.csv"),sep=",",header=TRUE)
   bins <- bins[,1:ncol(bins)-1]
   nFleets <- ncol(sel_c)
   nSpecies <- nrow(bins)
@@ -514,10 +510,9 @@ plot_Selectivities <- function(outPath) {
 }
 
 # effort by fleet
-plot_FishingEffort <- function(outPath) {
-  ##########################################################################3
+plot_FishingEffort <- function(outPath,inputData) {
   #plot effort
-  obs_effort <- t(observedEffort) #lazy data # read.table(paste0(inPath,"observation_effort.csv"),sep=",",header=TRUE)
+  obs_effort <- t(inputData$observedEffort) #lazy data # read.table(paste0(inPath,"observation_effort.csv"),sep=",",header=TRUE)
   nFleets <- dim(obs_effort)[2]-1
   fleetNames <- colnames(obs_effort)
 
@@ -557,7 +552,7 @@ plot_FishingEffort <- function(outPath) {
   ############################################################################
   # plot fishing _q's
   #fishing_q <- read.table(paste0(inPath,"fishing_q.csv"),sep=",",row.names=1,header=TRUE)
-  fishing_q <- fisheryq # lazy data
+  fishing_q <- inputData$fisheryq # lazy data
   fleetNames <- colnames(fishing_q)
   nSpecies <- dim(fishing_q)[1]
   png(paste0(outPath,"/Hydra_FishingQ.png"),width=8,height=11.5,units="in",res=300)
@@ -602,12 +597,12 @@ plot_FishingEffort <- function(outPath) {
 }
 
 # species growth
-plot_Growth <- function(outPath) {
+plot_Growth <- function(outPath,inputData) {
   ##########################################################################3
   # plot growth curves
   #growth <- read.table(paste0(inPath,"growth_species.csv"),sep=",",row.names=1,header=TRUE)
-  growthBins <- binwidth # lazy data read.table(paste0(inPath,"length_sizebins.csv"),sep=",",header=TRUE)
-  speciesNames <- row.names(binwidth)
+  growthBins <- inputData$binwidth # lazy data read.table(paste0(inPath,"length_sizebins.csv"),sep=",",header=TRUE)
+  speciesNames <- row.names(growthBins)
   nSpecies <- length(speciesNames)
 
   speciesNames[speciesNames=="goosefish"] <- "monkfish"
@@ -617,19 +612,19 @@ plot_Growth <- function(outPath) {
 
   growthFunctions <- c("na","exponential","na","von Bertalanffy")
 
-  maxLinf <- max(growthLinf)
+  maxLinf <- max(inputData$growthLinf)
   t <- seq(0,40,1)
   for (isp in 1:nSpecies) {
     growthThroughInterval1 <- growthBins[isp,1]
-    if(growthType[isp] == 2) {# exponential
-      psi <- growthPsi[isp]
-      kappa_r <- growthKappa[isp]
+    if(inputData$growthType[isp] == 2) {# exponential
+      psi <- inputData$growthPsi[isp]
+      kappa_r <- inputData$growthKappa[isp]
       growthFunc <- psi*t^kappa_r
       delta_t <- (growthThroughInterval1/psi)^(1/kappa_r)
       func <- growthFunctions[2]
-    } else if (growthType[isp] == 4) {# von Bert
-      k <- growthK[isp]
-      linf <- growthLinf[isp]
+    } else if (inputData$growthType[isp] == 4) {# von Bert
+      k <- inputData$growthK[isp]
+      linf <- inputData$growthLinf[isp]
       delta_t <- (1/k)*log(linf/(linf-growthThroughInterval1))
       growthFunc <- linf*(1-exp(-k*t))
       func <- growthFunctions[4]
@@ -638,7 +633,6 @@ plot_Growth <- function(outPath) {
     lines(rep(delta_t,2),c(0,linf),col="red",lty=2)
     legend("topleft",legend=speciesNames[isp],bty="n",cex=1.5)
     legend("bottomright",legend=func,bty="n",cex=1)
-
   }
   mtext("Age (yrs)",line = 1.7,outer=T, side=1,cex = 1.5)
   mtext("Length (cm)",line = -.5,outer=T, side=2,cex = 1.5)
@@ -647,22 +641,22 @@ plot_Growth <- function(outPath) {
 }
 
 # step/ramp for assessment module
-plot_Assessment_Step <- function(outPath) {
+plot_Assessment_Step <- function(outPath,inputData) {
   # plot assessment thresholds - step function
   png(paste0(outPath,"/Hydra_Assessment_Thresholds.png"),width=8,height= 11.5,units="in",res=300)
 
   #thresholds <- read.table(paste0(inPath,"assessmentThresholds.csv"),sep=",",row.names=1,header=TRUE)
 
-  nExperiments <- dim(exploitationOptions)[2] # lazy data
-  nSteps <- dim(thresholds)[1]
+  nExperiments <- dim(inputData$exploitationOptions)[2] # lazy data
+  nSteps <- dim(inputData$thresholds)[1]
   par(mfrow=c(nExperiments/2,2),mar=c(4,4,2,1)+.5,oma=c(1,1,1,1)+.0)
-  actionLevels <- thresholds #as.numeric(rownames(thresholds))
+  actionLevels <- inputData$thresholds #as.numeric(rownames(thresholds))
   actionLevels <- head(actionLevels,-1) # removes last value
   for (iExp in 1:nExperiments) {
-    stepObj <- stepfun(actionLevels,exploitationOptions[,iExp])
-    plot.stepfun(stepObj,ylim=c(0,max(exploitationOptions)),main="" ,ylab = "Exploitation Rate",xlab="B/B0")
-    abline(exploitationOptions[2,iExp],0,col="red")
-    legend("topleft",legend=paste0("Max rate = ",max(exploitationOptions[,iExp])))
+    stepObj <- stepfun(actionLevels,inputData$exploitationOptions[,iExp])
+    plot.stepfun(stepObj,ylim=c(0,max(inputData$exploitationOptions)),main="" ,ylab = "Exploitation Rate",xlab="B/B0")
+    abline(inputData$exploitationOptions[2,iExp],0,col="red")
+    legend("topleft",legend=paste0("Max rate = ",max(inputData$exploitationOptions[,iExp])))
   }
 
   graphics.off()

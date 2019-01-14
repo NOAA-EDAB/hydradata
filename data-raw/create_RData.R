@@ -6,17 +6,23 @@ create_RData <- function() {
   d <- get_DatData(path)
   p <- get_PinData(path)
 
+  # add all of fields to hydraData
+  hydraData <- d
+  hydraData <- modifyList(hydraData,p)
+
   # save each one as an RData file to lazily load with package
-  for (eachName in names(d)){
-    #assigns the list variable to its own variable
-    assign(eachName,d[[eachName]])
-    save(list=eachName,file=paste0("data/",eachName,".rda"))
-  }
-  for (eachName in names(p)){
-    #assigns the list variable to its own variable
-    assign(eachName,p[[eachName]])
-    save(list=eachName,file=paste0("data/",eachName,".rda"))
-  }
+  # for (eachName in names(d)){
+  #   #assigns the list variable to its own variable
+  #   assign(eachName,d[[eachName]])
+  #   save(list=eachName,file=paste0("data/",eachName,".rda"))
+  # }
+  # for (eachName in names(p)){
+  #   #assigns the list variable to its own variable
+  #   assign(eachName,p[[eachName]])
+  #   save(list=eachName,file=paste0("data/",eachName,".rda"))
+  # }
+
+  devtools::use_data(hydraData,overwrite = TRUE)
 
 }
 
@@ -200,9 +206,9 @@ get_DatData <- function(path){
 
   #fishery/fleet selectivity
   fisherySelectivityc<- read.csv(paste0(path,"/fishing_selectivityc.csv"),header=TRUE,row.names = 1)
-  d$fisherySelectivityc <- fisherySelectivityc #format(as.matrix(fisherySelectivityc),digits=5)
+  d$fisherySelectivityc <- fisherySelectivityc
   fisherySelectivityd<- read.csv(paste0(path,"/fishing_selectivityd.csv"),header=TRUE,row.names = 1)
-  d$fisherySelectivityd <- fisherySelectivityd #format(as.matrix(fisherySelectivityd),digits=5)
+  d$fisherySelectivityd <- fisherySelectivityd
 
   # B0 - equilibrium biomass
   B0 <- read.csv(paste0(path,"/B0.csv"),header=TRUE,row.names = 1)
@@ -251,12 +257,10 @@ get_PinData <- function(path){
   # Stipulate all information required for the pin data file
   p <- list()
   # path to data
-  # path <- paste0(getwd(),"/",options$pathToDataFiles)
   # list of species and guilds (Functional Groups)
   Y1N <- read.csv(paste0(path,"/observation_Y1N.csv"),header=TRUE,row.names=1)
   p$Y1N <- Y1N
-  #p$Y1N <- unlist(format(as.matrix(Y1N),digits=7))
-  #p$Y1N <- format(Y1N,digits=7)
+
 
   # redundant Avg recruitemtn and deviations
   redundantAvgRec <- read.csv(paste0(path,"/redundantAvgRecPinData.csv"),header=TRUE,row.names=1)
@@ -267,8 +271,7 @@ get_PinData <- function(path){
 
   # fishery catchability (q's)
   fisheryqs<- read.csv(paste0(path,"/fishing_q.csv"),header=TRUE,row.names = 1)
-  p$fisheryq<- fisheryqs #unlist(format(as.matrix(fisheryqs),digits=7))
-  #p$fishery_q<- (as.table(as.matrix(fisheryqs)))
+  p$fisheryq<- fisheryqs
 
 
   # survey q and obs error
@@ -278,7 +281,7 @@ get_PinData <- function(path){
 
   # fishing error
   fishery_sigma <- read.csv(paste0(path,"/fishing_error.csv"),header=TRUE,row.names = 1)
-  p$fisherySigma <- format(as.matrix(fishery_sigma),digits=NULL)
+  p$fisherySigma <- fishery_sigma
 
   return(p)
 }

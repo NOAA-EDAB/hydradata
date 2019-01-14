@@ -16,22 +16,19 @@
 #'
 #' @export
 
-#scenarioFlag="historical",temperatureFlag="true",scenarioType="fixed",exploitationRateFlag=30,assessmentSpeciesFlag="none",outputFileName="hydra_sim_guild_1_4"
-
-create_datpin_files <- function(listOfParameters){
+create_datpin_files <- function(listOfParameters,hydraData){
 
   if (!file.exists(listOfParameters$outDir)) {stop(paste0("Directory ",listOfParameters$outDir," doesn't exist. Create it!"))}
   # complete error checks to make sure all data conforms
   ######################################
- ###### NOT DONE YET #######################
+ ###### NOT DONE YET ###################
   ######################################
   options <- list()
-  d <- list()
 
   if (tolower(listOfParameters$temperatureFlag) == "mean") { # take the mean of the temp time series
-    d$observed_temperature <- rep(mean(observed_temperature),Nyrs)
+    hydraData$observedTemperature["temperature",] <- rep(mean(hydraData$observedTemperature["temperature",]),hydraData$Nyrs)
   } else {
-    # do nothing since observesd is read in
+    # do nothing since observed temperature is already read in
   }
 
 
@@ -40,28 +37,27 @@ create_datpin_files <- function(listOfParameters){
     options$assessmentOn <- 0
     options$assessmentWithSpeciesOn <- 0 # this is also ignored
     # if assessmentOn = 0. exploitationoption are ignored but still need to be read in .
-    d$exploitation <- exploitationOptions[,1] # never used when assessment is off but needs a placeholder
-    d$minMaxExploitation <- c(min(d$exploitation),max(d$exploitation)) # never used, just a placeholder
+    options$exploitation <- hydraData$exploitationOptions[,1] # never used when assessment is off but needs a placeholder
+    options$minMaxExploitation <- c(min(options$exploitation),max(options$exploitation)) # never used, just a placeholder
 
   } else if  (tolower(listOfParameters$scenarioFlag) == "assessment") {
     options$assessmentOn <- 1
-    maxRates <- exploitationOptions[d$Nthresholds,]*100  # picks out the last row which holds the max exploitation rate for each scenario
-    d$exploitation <- exploitationOptions[,(maxRates == listOfParameters$exploitationRateFlag)] # grabs the whole profile
-    print(d$exploitation)
-    maxRampExRate <- max(d$exploitation)
+    maxRates <- hydraData$exploitationOptions[hydraData$Nthresholds,]*100  # picks out the last row which holds the max exploitation rate for each scenario
+    options$exploitation <- hydraData$exploitationOptions[,(maxRates == listOfParameters$exploitationRateFlag)] # grabs the whole profile
+    maxRampExRate <- max(options$exploitation)
 
 
     if (tolower(listOfParameters$scenarioType) == "fixed") {
       # all exploitations are the same
-      d$exploitation <- rep(listOfParameters$exploitationRateFlag/100,Nthresholds)
-      d$minMaxExploitation <- rep(listOfParametersexploitationRateFlag/100,2)
+      options$exploitation <- rep(listOfParameters$exploitationRateFlag/100,hydraData$Nthresholds)
+      options$minMaxExploitation <- rep(listOfParametersexploitationRateFlag/100,2)
     } else {
-      d$minMaxExploitation <- c(min(d$exploitation),max(d$exploitation))
+      options$minMaxExploitation <- c(min(options$exploitation),max(options$exploitation))
       # we have a ramp down scenario and the values in d$exploitation reflect this
     }
 
     if ((listOfParameters$assessmentSpeciesFlag == "none") | (listOfParameters$assessmentSpeciesFlag == "low")) {
-      d$thresholdSpecies <- thresholdSpecies*0
+      options$thresholdSpecies <- thresholdSpecies*0
     }
     if (listOfParameters$assessmentSpeciesFlag == "none") {
       options$assessmentWithSpeciesOn <- 0
@@ -70,17 +66,18 @@ create_datpin_files <- function(listOfParameters){
     }
 
     # effort needs to change to represent exploitation rate equal to max(rampdown rate)
-    for (ifleet in 1:Nfleets) {
-      fE <- as.numeric(fishery_q[,ifleet]) # pick out fishery q's
-      indicator <- indicator_fishery_q[,ifleet] # pick out species to be used in mean
+    for (ifleet in 1:hydraData$Nfleets) {
+      fE <- as.numeric(hydraData$fishery_q[,ifleet]) # pick out fishery q's
+      indicator <- hydraData$indicatorFisheryq[,ifleet] # pick out species to be used in mean
       fEInd <- fE*indicator
       #      ind <- as.numeric(p$fishery_q[,ifleet]) > 1e-29 # find all > 1e-29
       ind <- as.numeric(fEInd) > 1e-29 # find all > 1e-29
-      observed_effort[ifleet,] <- rep(maxRampExRate/(sum(fEInd[ind])/sum(ind)),Nyrs) # Effort = ex/mean(q)
+      hydraData$observedEffort[ifleet+1,] <- rep(maxRampExRate/(sum(fEInd[ind])/sum(ind)),hydraData$Nyrs) # Effort = ex/mean(q)
     }
     #SMALL MESH OVERWITE. EVENTUALLY REMOVE THIS
-    print("********************* SMALL  MESH HARD CODED LINE 88 ****************************")
-    observed_effort[4,] <- rep(1E-6,Nyrs) # Effort = ex/mean(q)
+    print("********************* SMALL MESH & gillnet HARD CODED ****************************")
+    hydraData$observedEffort[5,] <- rep(1E-6,hydraData$Nyrs) # Effort = ex/mean(q)
+    hydraData$observedEffort[6,] <- rep(1E-6,hydraData$Nyrs) # Effort = ex/mean(q)
 
 
 
@@ -89,28 +86,33 @@ create_datpin_files <- function(listOfParameters){
   }
 
   # some error checks
-  if ((tolower(listOfParameters$scenarioFlag) == "historical") & (Nyrs !=53)) {
+  if ((tolower(listOfParameters$scenarioFlag) == "historical") & (hydraData$Nyrs !=53)) {
     stop(paste("Can not have a historical run > ",Nyrs,"years. Not enough data!"))
   }
 
   # need to use inputs to create output filename
 
-
   options$outputDatFileName <- paste0(listOfParameters$outputFilename,".dat")
   options$outputPinFileName <- paste0(listOfParameters$outputFilename,".pin")
 
+  # updata data based on options
+  hydraData <- modifyList(hydraData,options)
 
   # write out dat file
-  write_DatFile(d,options,listOfParameters)
-  write_PinFile(p,d,options,listOfParameters)
+  write_DatFile(hydraData,listOfParameters)
+  write_PinFile(hydraData,listOfParameters)
+
+  return(hydraData)
 
 }
 
 ## subfunctions get_pinData, get_DatData, write_DatFile,write_PinFile
 
 
-write_DatFile <- function(d,options,listOfParameters) {
-  outputFileName <- options$outputDatFileName
+write_DatFile <- function(hydraData,listOfParameters) {
+
+  attach(hydraData)
+  outputFileName <- outputDatFileName
   # write explanation of how this file was formed
   cat("# This file was created using create_DataFile.R and used all inputs from csv files found in folder:
       #createDataFiles_testing/dataInputsHydra",file=outputFileName,fill=TRUE)
@@ -188,9 +190,9 @@ write_DatFile <- function(d,options,listOfParameters) {
   }
   # observed effort
   cat("#  init_3darray obs_effort(1,Nareas,1,Nfleets,1,Nyrs)  ",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c("# fleet types",d$fleetNames),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c("# fleet types",fleetNames),file=outputFileName,fill=TRUE,append=TRUE)
   if (listOfParameters$scenarioFlag =="assessment") {
-    cat("#  effort based on q with Exploitation Rate = ",options$exploitationRate/100,". Manufactured effort for simulation runs",file=outputFileName,fill=TRUE,append=TRUE)
+    cat("#  effort based on q with Exploitation Rate = ",exploitationRate/100,". Manufactured effort for simulation runs",file=outputFileName,fill=TRUE,append=TRUE)
   }else{
     cat("#  Observed effort. No assessment",file=outputFileName,fill=TRUE,append=TRUE)
   }
@@ -429,7 +431,7 @@ write_DatFile <- function(d,options,listOfParameters) {
   cat(c(" ",flagLinearRamp),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   cat("# init_vector minMaxExploitation(1,2) - [MinExploitation, MaxExploitation",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",d$minMaxExploitation),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",minMaxExploitation),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("# init_vector minMaxThreshold(1,2) - [MinThreshold, MaxThreshold",file=outputFileName,fill=TRUE,append=TRUE)
   cat(c(" ",minMaxThresholds),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
@@ -443,7 +445,7 @@ write_DatFile <- function(d,options,listOfParameters) {
   cat("# note that must appear in ascending order",file=outputFileName,fill=TRUE,append=TRUE)
   cat(c(" ",thresholds),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("# exploitation_levels(1,Nthresholds). these must pair with the threshold_percent values - Step function",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",d$exploitation),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",exploitation),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # species specific addition to threshold
   cat("# threshold_species(1,Nspecies). Species level detection threshold",file=outputFileName,fill=TRUE,append=TRUE)
@@ -451,9 +453,9 @@ write_DatFile <- function(d,options,listOfParameters) {
 
   # assessment switches
   cat("# int AssessmentOn. Assessment On or Off",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",options$assessmentOn),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",assessmentOn),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("# int speciesDetection. include species (in addition to guild) in assessment on or off",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",options$assessmentWithSpeciesOn),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",assessmentWithSpeciesOn),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
     # large fish index cut off for large fish (cm)
   cat("# int LFI_size. (cm). Threshold to determin a large fish. used in LFI metric",file=outputFileName,fill=TRUE,append=TRUE)
@@ -520,12 +522,14 @@ write_DatFile <- function(d,options,listOfParameters) {
   cat("# eof",file=outputFileName,fill=TRUE,append=TRUE)
   cat("54321",file=outputFileName,fill=TRUE,append=TRUE)
 
+  detach(hydraData)
 
 }
 
 
-write_PinFile <- function(p,d,options,listOfParameters){
-  outputFileName <- options$outputPinFileName
+write_PinFile <- function(hydraData,listOfParameters){
+  attach(hydraData)
+  outputFileName <- outputPinFileName
   # write explanation of how this file was formed
   cat("#hydra_sim.pin for 10 species, 1 area (Georges Bank) for simulation, May 2013
       #note that species 9 and 10 have changed from ms3am test model",file=outputFileName,fill=TRUE)
@@ -549,7 +553,7 @@ write_PinFile <- function(p,d,options,listOfParameters){
   cat("#  init_3darray yr1N(1,Nareas,1,Nspecies,1,Nsizebins)       //initial year N at size, millions",file=outputFileName,fill=TRUE,append=TRUE)
 
   # need to reformat for cat function
-  Y1Nformat <- format(as.matrix(Y1N),digits=7)
+  Y1Nformat <- format(as.matrix(hydraData$Y1N),digits=7)
   for (sp in 1:Nspecies) {
     cat(c(" ",Y1Nformat[sp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
@@ -599,12 +603,11 @@ write_PinFile <- function(p,d,options,listOfParameters){
 
   # fishery sigma (catch obs eror)
   cat("#  init_3darray catch_sigma(1,Nareas,1,Nspecies,1,Nfleets,csig_phase)",file=outputFileName,fill=TRUE,append=TRUE)
+  fishSigq <- format(as.matrix(fisherySigma),digits=NULL)
   for (isp in 1:Nspecies) {
-    cat(c(" ",fisherySigma[isp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+    cat(c(" ",fishSigq[isp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
-
-
-
+  detach(hydraData)
 }
 

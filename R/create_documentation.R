@@ -10,9 +10,9 @@
 #'
 #'@export
 
-create_documentation <- function(outFile="documentation.html",outDir=getwd()){
+create_documentation <- function(outFile="documentation.html",outDir=getwd(),data = hydraData){
   # calls all of the plotting routines
-  main_plot_inputs(outPath=outDir) # path to where pngs will be saved
+  main_plot_inputs(outPath=outDir,data) # path to where pngs will be saved
   # locates the path to the rmd file
   rmdFile <- system.file("rmd",file = "create_documentation.Rmd",package="mshydradata")
   # makes the doumentation
