@@ -1,0 +1,71 @@
+---
+title: "mshydradata: user guide"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE,comment = "#>")
+library(mshydradata)
+```
+
+*####################### REWORK THIS #####################*
+
+The .dat and .pin files required for Hydra simulation runs (coded in ADMB) consist of many lines of text where the order of the data matter for the code to run. The process of changing these data files by hand for each scenario run is both frustrating and time consuming (not to mention prone to mistakes).
+
+To alleviate all of these concerns and to streamline future work `mshydradata` was written.
+
+For more package details type: 
+``` {r echo = TRUE,eval=FALSE}
+package?mshydradata
+```
+
+## Steps 
+
+1. Initiate scenario inputs:
+
+``` {r echo = TRUE}
+inputs <- setup_default_inputs()
+str(inputs)
+```
+
+This list should be mannipulated by the user to reflect a scenario they wish to simulate. The field `outDir` should be changed to reflect where the resulting .dat and .pin files are to be saved. By default the current working directory is used.
+
+2. Change any of the data lazily loaded in the package.
+
+For example to use Beverton Holt (recType = 5) stock recruitment relationships instead of the default (segmented linear, recType = 8), the user will need to set
+
+    `hydraData$recType <- rep(5,hydraData$Nspecies)`
+    
+To see all of the the fields in `hydraData` type `?hydraData`
+
+3. Create the data files (.dat and .pin)
+
+``` {r echo = TRUE,eval = FALSE}
+hydraData <- create_datpin_files(inputs,hydraData)
+```
+
+Two files are produced (.dat and .pin) based on the users preferences. They are created in the location specified by `inputs$outDir` with the name `inputs$outputFilename`
+
+4. At this point you are ready to run Hydra. If however you'd like to document the run then:
+
+``` {r echo = TRUE,eval = FALSE}
+create_documentation(outFile="documentation.html",outDir=getwd(),data = hydraData)
+```
+
+where in this case your data is still sotred in `hydraData`. If however at step 3 you chose to name your output something other than `hydraData` then you'll need to pass this as your data.
+
+HTML documentation is named as defined by `outFile` and along with accompanying plots are stored in `outDir`.
+
+
+## Lazily loaded data
+
+Baseline data are lazily loaded in the package. They are in the form of a list called `hydraData`
+
+```{r data, echo = FALSE}
+str(hydraData)
+```
+
