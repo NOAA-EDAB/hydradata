@@ -12,13 +12,15 @@ output:
     toc: yes
 params:
   dir: "NAMESPACE"
+  data: "NONE"
 ---
 
-<!-- ### The following plots are from one of the following scenarios -->
+<!-- Plots nd Data provided in output -->
 
 ```{r, out.width = "800px", echo=FALSE, include=FALSE}
 outSpecies <- "speciesjpgs"
 outPath <- params$dir
+data <- params$data
 
 ```
 Hydra is a length based multispecies, multifleet model, focused on Georges Bank, based on the concept of place based management, a defining requirement for Ecosystem based fisheries Management (EBFM). The set of species represented in this model account for ~90 of landings of all fish species on Georges Bank over the period of 1977-2014.
@@ -175,8 +177,18 @@ A foodweb where species are represented by trophic level on the y axis. Species 
 knitr::include_graphics(paste0(outPath,"/Hydra_foodWeb_network.png"))
 ```
 
+## Data
 
-# Growth
+Predator in columm, prey in rows
+```{r foodweb_data, out.width = "800px", echo=FALSE}
+# foodweb matrix
+knitr::kable(data$foodweb)
+```
+
+
+# Growth 
+
+## Functional form {.tabset .tabset-pills} 
 
 Each species in the model grows according to either 
 
@@ -198,11 +210,26 @@ These curves were fit to data outside of the model. Only parameter values are pa
 
 The red line depicts the time it takes for each species to grow to the end of the first size class/bin. (Size classes shown later in this document)
 
+### Growth function
 
-```{r, out.width = "800px", echo=FALSE}
+```{r, growth_plot, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_Growth.png"))
 ```
 
+### Data
+
+Type:
+
+* 2 for exponential growth ($\kappa$ and $\psi$)
+* 4 for von Bertalanfy growth (K) and Linf)
+
+```{r, growth_data, out.width = "800px", echo=FALSE}
+df <- cbind(hydraData$growthType,hydraData$growthK,hydraData$growthLinf,hydraData$growthKappa,hydraData$growthPsi)
+colnames(df) <- c("Type","K","Linf","Kappa","Psi")
+knitr::kable(df)
+```
+
+## Size class {.tabset .tabset-pills} 
 
 Each species has its been assigned 5 size related classes based on ????? and a species is permitted to grow into the next size class only. To ensure this all growth rates are standardized by the the fastest growing species. This rate of growth determins the number of time steps in the model. The bin widths for each species are shown in the following figure 
 
@@ -217,14 +244,23 @@ $$\Delta t_i= \left[\frac{l_{u,i}}{\psi_ie^{\Sigma\alpha_{p}X_{p,t} }}\right]^{\
 where $l_{u,i}$ and $l_{u,i}$ are the lengths of species i at the upper and lower bound of the designated interval.
 
 
+### size class bins
 
-```{r, out.width = "800px", echo=FALSE}
+```{r,  size_class_plot, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_binWidths.png"))
 ```
 
+### Data
+
+```{r,size_class_data, out.width = "800px", echo=FALSE}
+knitr::kable(data$binwidth)
+```
+
+
+
 # Recruitment
 
-## Stock Recruitment
+## Stock Recruitment {.tabset .tabset-pills} 
 The general form for recruitment follows:
 
 $$ R_t = f(S_{t-1},\theta)e^{\epsilon_t + \Sigma\alpha_{p}X_{p,t}}$$
@@ -263,11 +299,24 @@ Note that when $\beta$ = -$\alpha$ the model reduces to the Hockey Stick form.
 
 
 
+### Current Form
 
+These are the forms used in the cureent model run
 
-```{r, out.width = "800px", echo=FALSE}
+```{r, SR_plot, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_StockRecruitment.png"))
 ```
+
+### Data
+
+Parameter values also given for other forms (not used)
+
+```{r, SR_data, out.width = "800px", echo=FALSE}
+df <- cbind(data$alphaSegmented,data$betaSegmented,data$shapeSegmented)
+colnames(df) <- c("alpha","Beta","shape")
+knitr::kable(df)
+```
+
 
 ## Maturity
 Maturity determines the proportion of individuals in each size class capable of producing spawners at each time point
