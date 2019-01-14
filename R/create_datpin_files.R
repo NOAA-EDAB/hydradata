@@ -11,7 +11,7 @@
 #'@section Output:
 #'
 #'Two data files are output. A ".dat" and a ".pin" file. These are required by the Hydra code to run. The name of the file is determined by the variable \code{outputFilename} in the
-#'list \code{listOfParameters}. By default the files are saved in the current working directory. You can specify a differnt location in \code{listPfParameters}.
+#'list \code{listOfParameters}. By default the files are saved in the current working directory. You can specify a differnt location in \code{listofParameters}.
 #'See \code{\link{setup_default_inputs}}
 #'
 #'

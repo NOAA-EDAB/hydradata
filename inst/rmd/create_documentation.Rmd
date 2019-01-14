@@ -301,7 +301,7 @@ Note that when $\beta$ = -$\alpha$ the model reduces to the Hockey Stick form.
 
 ### Current Form
 
-These are the forms used in the cureent model run
+These are the forms used in the current model run
 
 ```{r, SR_plot, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_StockRecruitment.png"))
