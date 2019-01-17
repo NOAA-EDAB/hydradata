@@ -6,9 +6,120 @@
 \title{Data for Hydra data nd pin files (mshydradata)}
 \format{A list containing 133 elements
 \describe{
-    \item{speciesList}{Character vector: names of species in model}
-    \item{}{}
-    \item{}{}
+  \item{alphaBH}{Numeric Vector: slope at origin (alpha) for Beverton Holt Stock recruitment relationship}
+  \item{alphaDS}{Numeric Vector: slope at origin (alpha) for Deriso-Schnute Stock recruitment relationship}
+  \item{alphaEggRicker}{Numeric Vector: slope at origin (alpha) for Ricker stock-egg production relationship}
+  \item{alphaGamma}{Numeric Vector: slope at origin (alpha) for Gamma Stock recruitment relationship}
+  \item{alphaHockey}{Numeric Vector: slope at origin (alpha) for Hockey Stick recruitment relationship}
+  \item{alphaRicker}{Numeric Vector: slope at origin (alpha) for Ricker Stock recruitment relationship}
+  \item{alphaSegmented}{Numeric Vector: slope at origin (alpha) for Segmented (linear) recruitment relationship}
+  \item{alphaShepherd}{Numeric Vector: slope at origin (alpha) for Shepherd Stock recruitment relationship}
+  \item{ARParameters}{Numeric Vector: Auto-regressive parameters for error strucure of Survey, Recruitment, & Catch}
+  \item{assessmentPeriod}{Integer scalar: length of time (years) between assessment of stocks}
+  \item{avgFPhase}{??}
+  \item{avgRecPhase}{??}
+  \item{B0}{Numeric Vector: Levels of unfished biomass (metric tonnes)}
+  \item{bandwidthMetric}{Integer scalar: number of years used to calculate standard deviation of catch and biomass (past \code{bandwidthMeric} years used in calculation)}
+  \item{baselineThreshold}{Numeric scalar: Proportion of unfished biomass at which landings are prohibited}
+  \item{betaBH}{Numeric Vector: (beta) for Beverton Holt Stock recruitment relationship}
+  \item{betaDS}{Numeric Vector: (beta) for Deriso-Schnute Stock recruitment relationship}
+  \item{betaEggRicker}{Numeric Vector: (beta) for Ricker stock-egg production relationship}
+  \item{betaGamma}{Numeric Vector: (beta) for Gamma Stock recruitment relationship}
+  \item{betaHockey}{Numeric Vector: (beta) for Hockey Stick recruitment relationship (Note: beta = -alpha for Hockey stick)}
+  \item{betaRicker}{Numeric Vector: (beta) for Ricker Stock recruitment relationship}
+  \item{betaSegmented}{Numeric Vector: (beta) for Segmented (linear) recruitment relationship}
+  \item{betaShepherd}{Numeric Vector: (beta) for Shepherd Stock recruitment relationship}
+  \item{binwidth}{Integer matrix (Nspecies x Nsizebins): width of each size class (cm)}
+  \item{csigPhase}{??}
+  \item{debugState}{Integer scalar: Type of debugging. (Values 1, 2, 3, 4). Default = 3}
+  \item{devFPhase}{??}
+  \item{devRecPhase}{??}
+  \item{discardCoef}{Numeric matrix (Nspecies.Nfleets x Nsizebins): Proportion of catch that is discarded for each species/fleet/size class combination}
+  \item{discardSurvival}{Numeric matrix (Nspecies.Nfleets x Nsizebins): Proportion of catch that survives given it is discarded for each species/fleet/size class combination}
+  \item{exploitationOptions}{Numeric matrix (Nthresholds x Nscenarios): }
+  \item{fecundityd}{}
+  \item{fecundityh}{}
+  \item{fecundityTheta}{}
+  \item{fisheryq}{}
+  \item{fisherySelectivityc}{}
+  \item{fisherySelectivityd}{}
+  \item{fisherySigma}{}
+  \item{flagLinearRamp}{}
+  \item{flagMSE}{}
+  \item{fleetNames}{}
+  \item{foodweb}{}
+  \item{fqphase}{}
+  \item{growthCov}{}
+  \item{growthCovEffects}{}
+  \item{growthK}{}
+  \item{growthKappa}{}
+  \item{growthLinf}{}
+  \item{growthPsi}{}
+  \item{growthType}{}
+  \item{guildMembership}{}
+  \item{guildNames}{}
+  \item{indicatorFisheryq}{}
+  \item{intakeAlpha}{}
+  \item{intakeBeta}{}
+  \item{intakeStomach}{}
+  \item{lenwta}{}
+  \item{lenwtb}{}
+  \item{LFISize}{}
+  \item{M1}{}
+  \item{M2sizePrefMu}{}
+  \item{M2sizePrefSigma}{}
+  \item{maturityCov}{}
+  \item{maturityCovEffects}{}
+  \item{maturityNu}{}
+  \item{maturityOmega}{}
+  \item{minMaxThresholds}{}
+  \item{Nareas}{}
+  \item{Nfleets}{}
+  \item{NgrowthCov}{}
+  \item{NmaturityCov}{}
+  \item{NrecruitmentCov}{}
+  \item{Nsizebins}{}
+  \item{Nspecies}{}
+  \item{Nthresholds}{}
+  \item{numGuilds}{}
+  \item{Nyrs}{}
+  \item{observedBiomass}{}
+  \item{observedCatch}{}
+  \item{observedEffort}{}
+  \item{observedTemperature}{}
+  \item{otherFood}{}
+  \item{phimax}{}
+  \item{predOrPrey}{}
+  \item{recphase}{}
+  \item{recruitCovEffects}{}
+  \item{recruitmentCov}{}
+  \item{recSigma}{}
+  \item{recStochastic}{}
+  \item{recType}{}
+  \item{redundantAvgRec}{}
+  \item{redundantRecDevs}{}
+  \item{scaledEffort}{}
+  \item{scaleInitialN}{}
+  \item{sexRatio}{}
+  \item{shapeBH}{Numeric Vector: (shape) for Beverton Holt Stock recruitment relationship}
+  \item{shapeDS}{Numeric Vector: (shape) for Deriso-Schnute Stock recruitment relationship }
+  \item{shapeEggRicker}{Numeric Vector: (shape) for Ricker stock-egg production relationship}
+  \item{shapeGamma}{Numeric Vector: (shape) for Gamma Stock recruitment relationship}
+  \item{shapeHockey}{Numeric Vector: (shape) for Hockey Stick recruitment relationship}
+  \item{shapeRicker}{Numeric Vector: (shape) for Ricker Stock recruitment relationship}
+  \item{shapeSegmented}{Numeric Vector: (shape) for Segmented (linear) recruitment relationship}
+  \item{shapeShepherd}{Numeric Vector: (shape) for Shepherd Stock recruitment relationship}
+  \item{speciesList}{Character vector: names of species in model}
+  \item{sqphase}{}
+  \item{ssigPhase}{}
+  \item{surveyq}{}
+  \item{surveySigma}{}
+  \item{thresholds}{}
+  \item{thresholdSpecies}{}
+  \item{wtconv}{}
+  \item{Y1N}{}
+  \item{yr1Nphase}{}
+
 }}
 \source{
 Gaichas et al. + publication (currently being written up)
