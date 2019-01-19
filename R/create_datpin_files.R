@@ -95,11 +95,6 @@ create_datpin_files <- function(listOfParameters,hydraData){
     stop(paste("Can not have a historical run > ",hydraData$Nyrs,"years. Not enough data!"))
   }
 
-  # need to use inputs to create output filename
-
-  options$outputDatFileName <- paste0(listOfParameters$outputFilename,".dat")
-  options$outputPinFileName <- paste0(listOfParameters$outputFilename,".pin")
-
   # updata data based on options
   hydraData <- modifyList(hydraData,options)
 
@@ -117,7 +112,7 @@ create_datpin_files <- function(listOfParameters,hydraData){
 write_DatFile <- function(hydraData,listOfParameters) {
 
   attach(hydraData)
-  outputFileName <- outputDatFileName
+  outputFileName <-  paste0(listOfParameters$outputFilename,".dat")
   # write explanation of how this file was formed
   cat("# This file was created using create_DataFile.R and used all inputs from csv files found in folder:
       #createDataFiles_testing/dataInputsHydra",file=outputFileName,fill=TRUE)
@@ -534,7 +529,7 @@ write_DatFile <- function(hydraData,listOfParameters) {
 
 write_PinFile <- function(hydraData,listOfParameters){
   attach(hydraData)
-  outputFileName <- outputPinFileName
+  outputFileName <-  paste0(listOfParameters$outputFilename,".pin")
   # write explanation of how this file was formed
   cat("#hydra_sim.pin for 10 species, 1 area (Georges Bank) for simulation, May 2013
       #note that species 9 and 10 have changed from ms3am test model",file=outputFileName,fill=TRUE)
@@ -566,11 +561,11 @@ write_PinFile <- function(hydraData,listOfParameters){
   # recruitment. these are not used. If we delete then all previous code not compatible.
   # When we decide to forgo backward compatibility this will be deleted.
   cat("#//recruitment parameters from .pin file (now alts by spp read in from dat file; these defaults replaced in preliminary calcs)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat("#  init_matrix recGamma_alpha(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=TRUE,append=TRUE)
+  cat("#  init_matrix recGamma_alpha(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat(c(" ",alphaEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
-  cat("#  init_matrix eggRicker_shape(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=TRUE,append=TRUE)
+  cat("#  init_matrix eggRicker_shape(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat(c(" ",shapeEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
-  cat("#  init_matrix eggRicker_beta(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=TRUE,append=TRUE)
+  cat("#  init_matrix eggRicker_beta(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat(c(" ",betaEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
 
   # redundant inputs recruitment Devs etc. never used.
