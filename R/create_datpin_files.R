@@ -54,7 +54,6 @@ create_datpin_files <- function(listOfParameters,hydraData){
       # all exploitations are the same
       options$exploitationLevels <- rep(listOfParameters$maxExploitationRate/100,hydraData$Nthresholds)
       options$minMaxExploitation <- rep(listOfParameters$maxExploitationRate/100,2)
-      print(options)
     } else {
       options$minMaxExploitation <- c(min(options$exploitationLevels),max(options$exploitationLevels))
       # we have a ramp down scenario and the values in option$exploitation reflect this

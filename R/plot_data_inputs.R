@@ -283,7 +283,7 @@ plot_StockRecruitment <- function(outPath,inputData) {
   # plot stock recruitment
   #SR <- read.table(paste0(inPath,"recruitment_species.csv"),sep=",",row.names=1,header=TRUE)
   recTypes <- inputData$recType
-  speciesNames <- names(recTypes)
+  speciesNames <- inputData$speciesList
   speciesNames[speciesNames=="goosefish"] <- "monkfish"
   nSpecies <- length(speciesNames)
 
@@ -306,10 +306,42 @@ plot_StockRecruitment <- function(outPath,inputData) {
       assign("tempShape",paste0("shape",currentType))
       shape <- eval(as.name(tempShape))[isp]
 
-      breakpoint <- shape # for segmented
-      SSB <- seq(0,2.5*breakpoint,breakpoint)
-      ind <- SSB > breakpoint
-      R <- alpha*SSB  + (beta*(SSB-breakpoint))*ind
+      if (recTypes[isp] == 1) { #  Egg production : ricker
+        SSB <- seq(0,100000,5000)
+        R <- alpha*SSB*exp(-beta*SSB)
+
+      } else if (recTypes[isp] == 2) {# Deriso-Schnute
+        SSB <- seq(0,100000,5000)
+        R <- alpha*SSB*(1-beta*shape*SSB)^(1/shape)
+
+      } else if (recTypes[isp] == 3){ # Gamma
+        SSB <- seq(0,100000,5000)
+        R <- alpha*(SSB^shape)*exp(-beta*SSB)
+
+      } else if (recTypes[isp] == 4) { # Ricker
+        SSB <- seq(0,100000,5000)
+        R <- alpha*SSB*exp(-beta*SSB)
+
+      } else if (recTypes[isp] == 5) { # Beverton Holt
+        SSB <- seq(0,100000,5000)
+        R <- alpha*SSB/(1+ beta*SSB)
+
+      } else if (recTypes[isp] == 6) { # Shepherd
+        SSB <- seq(0,100000,5000)
+        R <- alpha*SSB/(1+ (SSB/beta)^shape)
+
+      } else if (recTypes[isp] == 7) { # Hockey Stick
+        breakpoint <- shape
+        SSB <- seq(0,2.5*breakpoint,breakpoint)
+        ind <- SSB > breakpoint
+        R <- alpha*SSB  + (beta*(SSB-breakpoint))*ind
+      } else if (recTypes[isp] == 8) { # Segmented
+        breakpoint <- shape
+        SSB <- seq(0,2.5*breakpoint,breakpoint)
+        ind <- SSB > breakpoint
+        R <- alpha*SSB  + (beta*(SSB-breakpoint))*ind
+      }
+
 
       plot(SSB,R,main="",type = "l",ylim=c(0,max(R)))
       legend("topleft",legend=speciesNames[isp],bty="n",cex=1.5)

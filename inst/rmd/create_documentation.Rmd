@@ -314,7 +314,7 @@ Parameter values also given for other forms (not used)
 ```{r, SR_data, out.width = "800px", echo=FALSE}
 df <- cbind(data$alphaSegmented,data$betaSegmented,data$shapeSegmented)
 colnames(df) <- c("alpha","Beta","shape")
-knitr::kable(df)
+knitr::kable(df,caption="Segmented Parameter values. NEED to change")
 ```
 
 
