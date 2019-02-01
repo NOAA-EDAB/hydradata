@@ -13,7 +13,7 @@ create_datpin_files(listOfParameters, hydraData)
 to represent a faux assessment. See \code{\link{hydraData}} for details}
 }
 \value{
-Nothing
+updated list of lazily loaded data "hydraData"
 }
 \description{
 Initial data files have been lazily loaded. To view their contents please run the \code{\link{create_documentation}} rmd file

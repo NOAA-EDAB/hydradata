@@ -6,7 +6,7 @@
 #'@param hydraData A data set comprising all necessary inputs. This data set can be the lazily loaded data set or it can be modified in any way
 #'to represent a faux assessment. See \code{\link{hydraData}} for details
 #'
-#'@return Nothing
+#'@return updated list of lazily loaded data "hydraData"
 #'
 #'@section Output:
 #'
@@ -111,7 +111,8 @@ create_datpin_files <- function(listOfParameters,hydraData){
 write_DatFile <- function(hydraData,listOfParameters) {
 
   attach(hydraData)
-  outputFileName <-  paste0(listOfParameters$outputFilename,".dat")
+  outPath <- paste0(listOfParameters$outDir,"/",listOfParameters$outputFilename)
+  outputFileName <-  paste0(outPath,".dat")
   # write explanation of how this file was formed
   cat("# This file was created using create_DataFile.R and used all inputs from csv files found in folder:
       #createDataFiles_testing/dataInputsHydra",file=outputFileName,fill=TRUE)
@@ -580,7 +581,7 @@ write_PinFile <- function(hydraData,listOfParameters){
 
   # recruitment sigma from S-R fits
   cat("#   init_matrix recsigma(1,Nareas,1,Nspecies)  //recruitment sigma",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",recSigma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",format(recSigma,digits=8)),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # fishery Q's
  # format for cat function
