@@ -528,7 +528,7 @@ write_DatFile <- function(hydraData,listOfParameters) {
 
 
 write_PinFile <- function(hydraData,listOfParameters){
-  attach(hydraData)
+
   outputFileName <-  paste0(listOfParameters$outputFilename,".pin")
   # write explanation of how this file was formed
   cat("#hydra_sim.pin for 10 species, 1 area (Georges Bank) for simulation, May 2013
@@ -554,7 +554,7 @@ write_PinFile <- function(hydraData,listOfParameters){
 
   # need to reformat for cat function
   Y1Nformat <- format(as.matrix(hydraData$Y1N),digits=7)
-  for (sp in 1:Nspecies) {
+  for (sp in 1:hydraData$Nspecies) {
     cat(c(" ",Y1Nformat[sp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
 
@@ -562,52 +562,52 @@ write_PinFile <- function(hydraData,listOfParameters){
   # When we decide to forgo backward compatibility this will be deleted.
   cat("#//recruitment parameters from .pin file (now alts by spp read in from dat file; these defaults replaced in preliminary calcs)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix recGamma_alpha(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
-  cat(c(" ",alphaEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",hydraData$alphaEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix eggRicker_shape(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
-  cat(c(" ",shapeEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",hydraData$shapeEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix eggRicker_beta(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
-  cat(c(" ",betaEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",hydraData$betaEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
 
   # redundant inputs recruitment Devs etc. never used.
   cat("#  //recruitment: average annual, annual devs, actual (avg+dev)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix avg_recruitment(1,Nareas,1,Nspecies,avg_rec_phase)  //average annual recruitment by area, species ",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#logspace (scaled by eye to produce flatline pops with pred mort but no fishing) ",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",redundantAvgRec),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",hydraData$redundantAvgRec),file=outputFileName,fill=TRUE,append=TRUE)
 
   cat("#  init_3darray recruitment_devs(1,Nareas,1,Nspecies,1,Nyrs,dev_rec_phase)  //recruitment deviations by area, species",file=outputFileName,fill=TRUE,append=TRUE)
-  for (sp in 1:Nspecies) {
-    cat(c(" ",redundantRecDevs[sp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  for (sp in 1:hydraData$Nspecies) {
+    cat(c(" ",hydraData$redundantRecDevs[sp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
   # recruitment sigma from S-R fits
   cat("#   init_matrix recsigma(1,Nareas,1,Nspecies)  //recruitment sigma",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",format(recSigma,digits=8)),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",format(hydraData$recSigma,digits=8)),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # fishery Q's
  # format for cat function
-  fishQ <- format(as.matrix(fisheryq),digits=7)
+  fishQ <- format(as.matrix(hydraData$fisheryq),digits=7)
   cat("# Fishery qs",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_3darray fishery_q(1,Nareas,1,Nspecies,1,Nfleets,fqphase)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("# area1.btrawl ptrawl longline)",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:Nspecies) {
-    cat(c(" ",fishQ[isp,]," #",rownames(fisheryq)[isp]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  for (isp in 1:hydraData$Nspecies) {
+    cat(c(" ",fishQ[isp,]," #",rownames(hydraData$fisheryq)[isp]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
 
   # survey q
   cat("#  init_matrix survey_q(1,Nareas,1,Nspecies,sqphase)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",surveyq),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",hydraData$surveyq),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   # survey sigma (observation error)
   cat("#  init_matrix surv_sigma(1,Nareas,1,Nspecies,ssig_phase)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",surveySigma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",hydraData$surveySigma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # fishery sigma (catch obs eror)
   cat("#  init_3darray catch_sigma(1,Nareas,1,Nspecies,1,Nfleets,csig_phase)",file=outputFileName,fill=TRUE,append=TRUE)
-  fishSigq <- format(as.matrix(fisherySigma),digits=NULL)
-  for (isp in 1:Nspecies) {
+  fishSigq <- format(as.matrix(hydraData$fisherySigma),digits=NULL)
+  for (isp in 1:hydraData$Nspecies) {
     cat(c(" ",fishSigq[isp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
-  detach(hydraData)
+
 }
 
