@@ -527,7 +527,9 @@ write_DatFile <- function(hydraData,listOfParameters) {
 
 write_PinFile <- function(hydraData,listOfParameters){
 
-  outputFileName <-  paste0(listOfParameters$outputFilename,".pin")
+  outPath <- paste0(listOfParameters$outDir,"/",listOfParameters$outputFilename)
+  outputFileName <-  paste0(outPath,".pin")
+
   # write explanation of how this file was formed
   cat("#hydra_sim.pin for 10 species, 1 area (Georges Bank) for simulation, May 2013
       #note that species 9 and 10 have changed from ms3am test model",file=outputFileName,fill=TRUE)
