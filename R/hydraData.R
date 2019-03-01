@@ -44,7 +44,7 @@
 #'   \item{fisherySelectivityd}{Numeric matrix (Nspecies x Nfleets): parameter d. These are a measure of the selection process by fishing gear which causes the catch composition to be different from the general population. Worded in a different way it represents the probability of a fish remaining in the gear as a function of its size. It is used to control the impact of fishing on juveniles}
 #'   \item{fisherySigma}{Numeric matrix (Nspecies x Nfleets): Standard deviation applied to catch (assumed log normal distribution)}
 #'   \item{flagLinearRamp}{Integer scalar: Determins if a step function or a linear function is used to calculate exploitation rates during an assessment. Values: 0 (Step function) or 1 (linear function). Default = 1}
-#'   \item{flagMSE}{Binary scalar: Determins whether an MSE is being performed. Values: 0 (no, extensive output files) or 1 (yes, limited output files). Default = 0}
+#'   \item{flagMSE}{Integer scalar: Determins whether an MSE is being performed. Values: 0 (no, extensive output files) or 1 (yes, limited output files). 2 (yes, Darwinian, catch and biomass only). Default = 0}
 #'   \item{fleetNames}{Character vector: Names to characterize the fleets}
 #'   \item{foodweb}{Binary matrix (Nspecies x Nspecies): Predators in columns, prey in rows. Value of 1 indicates predator eats prey}
 #'   \item{fqphase}{??}
