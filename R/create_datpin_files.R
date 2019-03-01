@@ -35,7 +35,7 @@ create_datpin_files <- function(listOfParameters,hydraData){
   }
 
 
-  if (tolower(listOfParameters$scenarioFlag) == "historical") {
+  if ((tolower(listOfParameters$scenarioFlag) == "historical") | (tolower(listOfParameters$scenarioFlag) == "darwin")) {
     # we assume a historical run. True Temp, True Effort, No asessment, Rec error, no survey error
     options$assessmentOn <- 0
     options$assessmentWithSpeciesOn <- 0 # this is also ignored
@@ -86,7 +86,7 @@ create_datpin_files <- function(listOfParameters,hydraData){
   } else if (tolower(listOfParameters$scenarioFlag) == "custom") {
     # code this part if needed
   } else {
-    stop(paste0("scenarioFlag can only be \"historic\" or \"assessment\". You have = ",listOfParameters$scenarioFlag))
+    stop(paste0("scenarioFlag can only be \"historic\" ,\"darwin\", or \"assessment\". You have = ",listOfParameters$scenarioFlag))
   }
 
   # some error checks
