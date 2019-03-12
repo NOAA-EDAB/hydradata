@@ -1,6 +1,6 @@
 ---
 title: 'Hydra: Multispecies, multifleet model for Georges Bank'
-author: "Andy Beet, Mike Fogarty, Sarah Gaichas, Sean Lucey, Laurel Col, Rob Gamble, Gavin Fay"
+#author: "Andy Beet, Mike Fogarty, Sarah Gaichas, Sean Lucey, Laurel Col, Rob Gamble, Gavin Fay"
 output:
   html_document:
     collapsed: yes
@@ -509,9 +509,43 @@ WHERE DID THESE COME FROM?
 knitr::include_graphics(paste0(outPath,"/Hydra_FishingQ.png"))
 ```
 
-## Discard and survival probabilities
+## Discard and survival probabilities {.tabset .tabset-pills}
 
-Once fish are brought to the surface all teleosts and other bony fish (those with swim bladders) are assumed to be dead. Elamobranchs on the other hand can survive the trip to the surface and if discarded by the fisher have a probability of surviving. To capture this, we include the probability of discarding an elasmobranch species and a probability of survival given it is discarded.
+Once fish are brought to the surface all teleosts and other bony fish (those with swim bladders) are assumed to be dead. Elamobranchs on the other hand can survive the trip to the surface and if discarded by the fisher have a probability of surviving. To capture this, we include the probability of discarding an elasmobranch species and a probability of survival given it is discarded. Therefore fishing mortality, F, is partitioned into mortality due to landing of species and mortality due to discarded fish.
+
+$$Mortality_{ij} = F_{ij}(1-p(discard_{ij})) + F_{ij}~p(discard_{ij})(1-p(survive_{ij}|discard_{ij}))$$
+for species $i$ in size class $j$
+
+### Discard probabilities
+
+```{r, discard_data , out.width = "800px", echo=FALSE}
+# extracts the row lines for elsamobranchs in the discard variables
+locOfElasmos <- which("elasmobranch"==tolower(data$guildNames))
+startLoc <- 1 + (locOfElasmos - 1)*data$Nsizebins 
+endLoc <- locOfElasmos*data$Nsizebins
+rows <- NULL
+for (ii in 1:length(startLoc)){
+  rows <- c(rows,startLoc[ii]:endLoc[ii])
+}
+
+knitr::kable(data$discardCoef[rows,])
+```
+
+### Survival probabilites
+
+```{r, survival_data, out.width = "800px", echo=FALSE}
+# extracts the row lines for elsamobranchs in the survival variables
+locOfElasmos <- which("elasmobranch"==tolower(data$guildNames))
+startLoc <- 1 + (locOfElasmos - 1)*data$Nsizebins 
+endLoc <- locOfElasmos*data$Nsizebins
+rows <- NULL
+for (ii in 1:length(startLoc)){
+  rows <- c(rows,startLoc[ii]:endLoc[ii])
+}
+
+knitr::kable(data$discardSurvival[rows,])
+```
+
 
 ## Exploitation {.tabset .tabset-pills}
 
