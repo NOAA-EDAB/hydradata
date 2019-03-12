@@ -519,7 +519,7 @@ for species $i$ in size class $j$
 ### Discard probabilities
 
 ```{r, discard_data , out.width = "800px", echo=FALSE}
-# extracts the row lines for elsamobranchs in the discard variables
+# extracts the row lines for elsamobranchs in the discard variable
 locOfElasmos <- which("elasmobranch"==tolower(data$guildNames))
 startLoc <- 1 + (locOfElasmos - 1)*data$Nsizebins 
 endLoc <- locOfElasmos*data$Nsizebins
@@ -534,7 +534,7 @@ knitr::kable(data$discardCoef[rows,])
 ### Survival probabilites
 
 ```{r, survival_data, out.width = "800px", echo=FALSE}
-# extracts the row lines for elsamobranchs in the survival variables
+# extracts the row lines for elsamobranchs in the survival variable
 locOfElasmos <- which("elasmobranch"==tolower(data$guildNames))
 startLoc <- 1 + (locOfElasmos - 1)*data$Nsizebins 
 endLoc <- locOfElasmos*data$Nsizebins
