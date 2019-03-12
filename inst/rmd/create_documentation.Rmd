@@ -224,7 +224,7 @@ Type:
 * 4 for von Bertalanfy growth (K) and Linf)
 
 ```{r, growth_data, out.width = "800px", echo=FALSE}
-df <- cbind(hydraData$growthType,hydraData$growthK,hydraData$growthLinf,hydraData$growthKappa,hydraData$growthPsi)
+df <- cbind(data$growthType,data$growthK,data$growthLinf,data$growthKappa,data$growthPsi)
 colnames(df) <- c("Type","K","Linf","Kappa","Psi")
 knitr::kable(df)
 ```
