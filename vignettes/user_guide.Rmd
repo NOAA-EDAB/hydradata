@@ -1,5 +1,5 @@
 ---
-title: "mshydradata: user guide"
+title: "hydradata: user guide"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
@@ -9,18 +9,18 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE,comment = "#>")
-library(mshydradata)
+library(hydradata)
 ```
 
 *####################### REWORK THIS #####################*
 
 The .dat and .pin files required for Hydra simulation runs (coded in ADMB) consist of many lines of text where the order of the data matter for the code to run. The process of changing these data files by hand for each scenario run is both frustrating and time consuming (not to mention prone to mistakes).
 
-To alleviate all of these concerns and to streamline future work `mshydradata` was written.
+To alleviate all of these concerns and to streamline future work `hydradata` was written.
 
 For more package details type: 
 ``` {r echo = TRUE,eval=FALSE}
-package?mshydradata
+package?hydradata
 ```
 
 ## Steps 

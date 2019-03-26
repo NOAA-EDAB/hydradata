@@ -1,9 +1,9 @@
 ## ----setup, include = FALSE----------------------------------------------
 knitr::opts_chunk$set(collapse = TRUE,comment = "#>")
-library(mshydradata)
+library(hydradata)
 
 ## ----echo = TRUE,eval=FALSE----------------------------------------------
-#  package?mshydradata
+#  package?hydradata
 
 ## ----echo = TRUE---------------------------------------------------------
 inputs <- setup_default_inputs()

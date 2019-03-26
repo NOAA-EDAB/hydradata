@@ -1,4 +1,4 @@
 library(testthat)
-library(mshydradata)
+library(hydradata)
 
-test_check("mshydradata")
+test_check("hydradata")

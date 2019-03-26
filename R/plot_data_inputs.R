@@ -441,7 +441,7 @@ plot_Y1N_Biomass_lengthweight_bins <- function(outPath,inputData) {
   nBins <- dim(inputData$Y1N)[2]
 
   ## binwidths
-  #png(system.file("rmd","Hydra_binWidths.png",package="mshydradata"),width=11.5,height=8,units="in",res=300)
+  #png(system.file("rmd","Hydra_binWidths.png",package="hydradata"),width=11.5,height=8,units="in",res=300)
   png(paste0(outPath,"/Hydra_binWidths.png"),width=11.5,height=8,units="in",res=300)
   par(oma=c(1,4,1,2))
   for (isp in 1:nSpecies) {
