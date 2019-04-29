@@ -12,8 +12,6 @@ knitr::opts_chunk$set(collapse = TRUE,comment = "#>")
 library(hydradata)
 ```
 
-*####################### REWORK THIS #####################*
-
 The .dat and .pin files required for Hydra simulation runs (coded in ADMB) consist of many lines of text where the order of the data matter for the code to run. The process of changing these data files by hand for each scenario run is both frustrating and time consuming (not to mention prone to mistakes).
 
 To alleviate all of these concerns and to streamline future work `hydradata` was written.
@@ -25,16 +23,33 @@ package?hydradata
 
 ## Steps 
 
-1. Initiate scenario inputs:
+Note the following example updates the lazily loaded data `hydraData` using the same variable name. This is not a necessary requirment.
+
+### Change harvest control rule step function (step 1)
+
+To run a harvest control strategy using a step function (as opposed to a continuous linear function) then use the `set_hcr` function. For example, to produce a set of scenarios where exploitation is ramped down from a maximum (0.4:.02:.4) to a minumum of 0.04 over 5 discrete steps then the following will provide such a table which will replace the default table in the lazily loaded data set `hydraData`
+
+``` {r echo = TRUE}
+hydraData <- set_hcr(currentData=hydraData, Nthresholds=5, minMaxThresholds=c(0.1,0.4), minMaxExploitations=c(0.04,0.4), increment=.02)
+print(hydraData$exploitationOptions)
+```
+Each column represent a scenario with increasing values of exploitaion corresponding to assigned levels of thresholds
+``` {r echo = TRUE}
+print(hydraData$thresholds)
+```
+
+
+### Initiate scenario inputs (step 2)
 
 ``` {r echo = TRUE}
 inputs <- setup_default_inputs()
+inputs$outDir <- "path/to/your/output/directory"
 str(inputs)
 ```
 
 This list should be mannipulated by the user to reflect a scenario they wish to simulate. The field `outDir` should be changed to reflect where the resulting .dat and .pin files are to be saved. By default the current working directory is used.
 
-2. Change any of the data lazily loaded in the package.
+### Change any of the data lazily loaded in the package (step 3)
 
 For example to use Beverton Holt (recType = 5) stock recruitment relationships instead of the default (segmented linear, recType = 8), the user will need to set
 
@@ -42,7 +57,7 @@ For example to use Beverton Holt (recType = 5) stock recruitment relationships i
     
 To see all of the the fields in `hydraData` type `?hydraData`
 
-3. Create the data files (.dat and .pin)
+### Create the data (.dat and .pin) files (step 4)
 
 ``` {r echo = TRUE,eval = FALSE}
 hydraData <- create_datpin_files(inputs,hydraData)
@@ -50,13 +65,14 @@ hydraData <- create_datpin_files(inputs,hydraData)
 
 Two files are produced (.dat and .pin) based on the users preferences. They are created in the location specified by `inputs$outDir` with the name `inputs$outputFilename`
 
-4. At this point you are ready to run Hydra. If however you'd like to document the run then:
+### Document scenarios (step 5)
+At this point you are ready to run Hydra. If however you'd like to document the run then:
 
 ``` {r echo = TRUE,eval = FALSE}
 create_documentation(outFile="documentation.html",outDir=getwd(),data = hydraData)
 ```
 
-where in this case your data is still sotred in `hydraData`. If however at step 3 you chose to name your output something other than `hydraData` then you'll need to pass this as your data.
+where in this case your data file is `hydraData`. If however at step 4 you chose to name your output something other than `hydraData` then you'll need to pass this as your data.
 
 HTML documentation is named as defined by `outFile` and along with accompanying plots are stored in `outDir`.
 
