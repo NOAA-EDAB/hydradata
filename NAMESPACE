@@ -2,4 +2,5 @@
 
 export(create_datpin_files)
 export(create_documentation)
+export(set_hcr)
 export(setup_default_inputs)
