@@ -6,12 +6,16 @@ library(hydradata)
 #  package?hydradata
 
 ## ----echo = TRUE---------------------------------------------------------
-inputs <- setup_default_inputs()
-str(inputs)
+hydraData <- set_hcr(currentData=hydraData, Nthresholds=5, minMaxThresholds=c(0.1,0.4), minMaxExploitations=c(0.04,0.4), increment=.02)
+print(hydraData$exploitationOptions)
 
 ## ----echo = TRUE---------------------------------------------------------
-newData <- set_hcr(currentData=hydraData, Nthresholds=5, minMaxThresholds=c(0.1,0.4), minMaxExploitations=c(0.04,0.4), increment=.02)
-str(newData$exploitationOptions)
+print(hydraData$thresholds)
+
+## ----echo = TRUE---------------------------------------------------------
+inputs <- setup_default_inputs()
+inputs$outDir <- "path/to/your/output/directory"
+str(inputs)
 
 ## ----echo = TRUE,eval = FALSE--------------------------------------------
 #  hydraData <- create_datpin_files(inputs,hydraData)

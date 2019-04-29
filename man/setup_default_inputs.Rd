@@ -4,21 +4,32 @@
 \alias{setup_default_inputs}
 \title{creates default input values for data file creation}
 \usage{
-setup_default_inputs(outDir = getwd())
+setup_default_inputs(outDir = getwd(), scenarioFlag = "historical",
+  temperatureFlag = "true", scenarioType = "fixed",
+  maxExploitationRate = 30, assessmentSpeciesFlag = "none",
+  outputFilename = "hydra_sim", fillLength = 2000)
 }
-\value{
-A list containing:
+\arguments{
+\item{outDir}{Character string: Path to where output will be saved. Default = current working directory}
 
 \item{scenarioFlag}{Character string: Speciying a scenario of either "historical" or "assessment". Default = "historical"}
+
+\item{temperatureFlag}{Character string: Determins whether to use the observed temperature data (true) or the mean (mean). Default = "true"}
+
 \item{scenarioType}{Character string: Type of assessment scenario. "fixed" or "ramp". (Only used if scenarioFlag is "assessment"). Default = "fixed"}
-\item{exploitationRate}{Integer: The level of the maximum exploitation in either "ramp" or "fixed". Valid choices are 5,10,15,20,25,30.(Only used if scenarioFlag is "assessment"). Default value = 30}
+
+\item{maxExploitationRate}{Integer: The level of the maximum exploitation in either "ramp" or "fixed". Valid choices are 5,10,15,20,25,30.(Only used if scenarioFlag is "assessment"). Default value = 30}
+
 \item{assessmentSpeciesFlag}{Character string: The level of species protection "none", "low", "high". (Only used if scenarioFlag is "assessment").
 "none" = specific species are not protected during an assessment, "low" = species are protected at same level as the complex, "high" = elasmobranchs get increased protection".
-Default = "none" }
-\item{outputFilename}{Character string: Name of the (.dat and .pin) output files. Default = "hydra_sim" }
-\item{temperatureFlag}{Character string: Determins whether to use the observed temperature data (true) or the mean (mean). Default = "true"}
-\item{fillLength}{Integer: number of character that exist on a line in the output files. If too small. The data wrap to following line. This causes an error at run time. Default = 2000}
-\item{outDir}{Character string: Path to where output will be saved. Default = current working directory}
+Default = "none"}
+
+\item{outputFilename}{Character string: Name of the (.dat and .pin) output files. Default = "hydra_sim"}
+
+\item{fillLengthInteger:}{number of character that exist on a line in the output files. If too small. The data wrap to following line. This causes an error at run time. Default = 2000}
+}
+\value{
+A list containing the same variables
 }
 \description{
 You must run this function to set up the list needed to pass to \code{\link{create_datpin_files}}.

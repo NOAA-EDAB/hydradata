@@ -47,7 +47,7 @@ inputs$outDir <- "path/to/your/output/directory"
 str(inputs)
 ```
 
-This list should be mannipulated by the user to reflect a scenario they wish to simulate. The field `outDir` should be changed to reflect where the resulting .dat and .pin files are to be saved. By default the current working directory is used.
+This list should be manipulated by the user to reflect a scenario they wish to simulate. The field `outDir` should be changed to reflect where the resulting .dat and .pin files are to be saved. By default the current working directory is used.
 
 ### Change any of the data lazily loaded in the package (step 3)
 
