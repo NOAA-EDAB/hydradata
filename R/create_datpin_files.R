@@ -76,7 +76,6 @@ print(maxRampExRate)
       #      ind <- as.numeric(p$fishery_q[,ifleet]) > 1e-29 # find all > 1e-29
       ind <- as.numeric(fEInd) > 1e-29 # find all > 1e-29
       dataList$observedEffort[ifleet+1,] <- rep(maxRampExRate/(sum(fEInd[ind])/sum(ind)),dataList$Nyrs) # Effort = ex/mean(q)
-print(rep(maxRampExRate/(sum(fEInd[ind])/sum(ind)),dataList$Nyrs))
     }
     #SMALL MESH OVERWITE. EVENTUALLY REMOVE THIS
     print("********************* SMALL MESH & gillnet HARD CODED ****************************")
@@ -94,7 +93,6 @@ print(rep(maxRampExRate/(sum(fEInd[ind])/sum(ind)),dataList$Nyrs))
     stop(paste("Can not have a historical run > ",dataList$Nyrs,"years. Not enough data!"))
   }
 
-  print(options)
   # updata data based on options
   dataList <- modifyList(dataList,options)
 
