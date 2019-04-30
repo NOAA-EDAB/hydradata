@@ -45,7 +45,7 @@ create_datpin_files <- function(listOfParameters,hydraData){
 
   } else if  (tolower(listOfParameters$scenarioFlag) == "assessment") {
     options$assessmentOn <- 1
-    maxRates <- hydraData$exploitationOptions[hydraData$Nthresholds,]*100  # picks out the last row which holds the max exploitation rate for each scenario
+    maxRates <- round(hydraData$exploitationOptions[hydraData$Nthresholds,]*100)  # picks out the last row which holds the max exploitation rate for each scenario
     options$exploitationLevels <- hydraData$exploitationOptions[,(maxRates == listOfParameters$maxExploitationRate)] # grabs the whole profile
     maxRampExRate <- max(options$exploitationLevels)
 
