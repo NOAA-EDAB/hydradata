@@ -48,7 +48,6 @@ create_datpin_files <- function(listOfParameters,dataList){
     maxRates <- round(dataList$exploitationOptions[dataList$Nthresholds,]*100)  # picks out the last row which holds the max exploitation rate for each scenario
     options$exploitationLevels <- dataList$exploitationOptions[,(maxRates == listOfParameters$maxExploitationRate)] # grabs the whole profile
     maxRampExRate <- max(options$exploitationLevels)
-print(maxRampExRate)
 
     if (tolower(listOfParameters$scenarioType) == "fixed") {
       # all exploitations are the same
