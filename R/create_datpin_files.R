@@ -3,7 +3,7 @@
 #' Initial data files have been lazily loaded. To view their contents please run the \code{\link{create_documentation}} rmd file
 #'
 #'@param listOfParameters see \code{\link{setup_default_inputs}}
-#'@param hydraData A data set comprising all necessary inputs. This data set can be the lazily loaded data set or it can be modified in any way
+#'@param dataList A data set comprising all necessary inputs. This data set can be the lazily loaded data set or it can be modified in any way
 #'to represent a faux assessment. See \code{\link{hydraData}} for details
 #'
 #'@return updated list of lazily loaded data "hydraData"
@@ -18,18 +18,18 @@
 #'
 #' @export
 
-create_datpin_files <- function(listOfParameters,hydraData){
+create_datpin_files <- function(listOfParameters,dataList){
 
   if (!file.exists(listOfParameters$outDir)) {stop(paste0("Directory ",listOfParameters$outDir," doesn't exist. Create it!"))}
   # complete error checks to make sure all data conforms
   ######################################
  ###### NOT DONE YET ###################
   ######################################
-  # options respesent additions to hydraData
+  # options respesent additions to dataList
   options <- list()
 
   if (tolower(listOfParameters$temperatureFlag) == "mean") { # take the mean of the temp time series
-    hydraData$observedTemperature["temperature",] <- rep(mean(hydraData$observedTemperature["temperature",]),hydraData$Nyrs)
+    dataList$observedTemperature["temperature",] <- rep(mean(dataList$observedTemperature["temperature",]),dataList$Nyrs)
   } else {
     # do nothing since observed temperature is already read in
   }
@@ -40,19 +40,19 @@ create_datpin_files <- function(listOfParameters,hydraData){
     options$assessmentOn <- 0
     options$assessmentWithSpeciesOn <- 0 # this is also ignored
     # if assessmentOn = 0. exploitationoption are ignored but still need to be read in .
-    options$exploitationLevels <- hydraData$exploitationOptions[,1] # never used when assessment is off but needs a placeholder
+    options$exploitationLevels <- dataList$exploitationOptions[,1] # never used when assessment is off but needs a placeholder
     options$minMaxExploitation <- c(min(options$exploitationLevels),max(options$exploitationLevels)) # never used, just a placeholder
 
   } else if  (tolower(listOfParameters$scenarioFlag) == "assessment") {
     options$assessmentOn <- 1
-    maxRates <- round(hydraData$exploitationOptions[hydraData$Nthresholds,]*100)  # picks out the last row which holds the max exploitation rate for each scenario
-    options$exploitationLevels <- hydraData$exploitationOptions[,(maxRates == listOfParameters$maxExploitationRate)] # grabs the whole profile
+    maxRates <- round(dataList$exploitationOptions[dataList$Nthresholds,]*100)  # picks out the last row which holds the max exploitation rate for each scenario
+    options$exploitationLevels <- dataList$exploitationOptions[,(maxRates == listOfParameters$maxExploitationRate)] # grabs the whole profile
     maxRampExRate <- max(options$exploitationLevels)
-
+print(maxRampRate)
 
     if (tolower(listOfParameters$scenarioType) == "fixed") {
       # all exploitations are the same
-      options$exploitationLevels <- rep(listOfParameters$maxExploitationRate/100,hydraData$Nthresholds)
+      options$exploitationLevels <- rep(listOfParameters$maxExploitationRate/100,dataList$Nthresholds)
       options$minMaxExploitation <- rep(listOfParameters$maxExploitationRate/100,2)
     } else {
       options$minMaxExploitation <- c(min(options$exploitationLevels),max(options$exploitationLevels))
@@ -60,7 +60,7 @@ create_datpin_files <- function(listOfParameters,hydraData){
     }
 
     if ((listOfParameters$assessmentSpeciesFlag == "none") | (listOfParameters$assessmentSpeciesFlag == "low")) {
-      options$thresholdSpecies <- hydraData$thresholdSpecies*0
+      options$thresholdSpecies <- dataList$thresholdSpecies*0
     }
     if (listOfParameters$assessmentSpeciesFlag == "none") {
       options$assessmentWithSpeciesOn <- 0
@@ -69,19 +69,19 @@ create_datpin_files <- function(listOfParameters,hydraData){
     }
 
     # effort needs to change to represent exploitation rate equal to max(rampdown rate)
-    for (ifleet in 1:hydraData$Nfleets) {
-      fE <- as.numeric(hydraData$fisheryq[,ifleet]) # pick out fishery q's
-      indicator <- hydraData$indicatorFisheryq[,ifleet] # pick out species to be used in mean
+    for (ifleet in 1:dataList$Nfleets) {
+      fE <- as.numeric(dataList$fisheryq[,ifleet]) # pick out fishery q's
+      indicator <- dataList$indicatorFisheryq[,ifleet] # pick out species to be used in mean
       fEInd <- fE*indicator
       #      ind <- as.numeric(p$fishery_q[,ifleet]) > 1e-29 # find all > 1e-29
       ind <- as.numeric(fEInd) > 1e-29 # find all > 1e-29
-      hydraData$observedEffort[ifleet+1,] <- rep(maxRampExRate/(sum(fEInd[ind])/sum(ind)),hydraData$Nyrs) # Effort = ex/mean(q)
+      dataList$observedEffort[ifleet+1,] <- rep(maxRampExRate/(sum(fEInd[ind])/sum(ind)),dataList$Nyrs) # Effort = ex/mean(q)
 
     }
     #SMALL MESH OVERWITE. EVENTUALLY REMOVE THIS
     print("********************* SMALL MESH & gillnet HARD CODED ****************************")
-    hydraData$observedEffort[5,] <- rep(1E-6,hydraData$Nyrs) # Effort = ex/mean(q)
-    hydraData$observedEffort[6,] <- rep(1E-6,hydraData$Nyrs) # Effort = ex/mean(q)
+    dataList$observedEffort[5,] <- rep(1E-6,dataList$Nyrs) # Effort = ex/mean(q)
+    dataList$observedEffort[6,] <- rep(1E-6,dataList$Nyrs) # Effort = ex/mean(q)
 
   } else if (tolower(listOfParameters$scenarioFlag) == "custom") {
     # code this part if needed
@@ -90,25 +90,26 @@ create_datpin_files <- function(listOfParameters,hydraData){
   }
 
   # some error checks
-  if ((tolower(listOfParameters$scenarioFlag) == "historical") & (hydraData$Nyrs !=53)) {
-    stop(paste("Can not have a historical run > ",hydraData$Nyrs,"years. Not enough data!"))
+  if ((tolower(listOfParameters$scenarioFlag) == "historical") & (dataList$Nyrs !=53)) {
+    stop(paste("Can not have a historical run > ",dataList$Nyrs,"years. Not enough data!"))
   }
 
+  print(options)
   # updata data based on options
-  hydraData <- modifyList(hydraData,options)
+  dataList <- modifyList(dataList,options)
 
   # write out dat file
-  write_DatFile(hydraData,listOfParameters)
-  write_PinFile(hydraData,listOfParameters)
+  write_DatFile(dataList,listOfParameters)
+  write_PinFile(dataList,listOfParameters)
 
-  return(hydraData)
+  return(dataList)
 
 }
 
 ## subfunctions get_pinData, get_DatData, write_DatFile,write_PinFile
 
 
-write_DatFile <- function(hydraData,listOfParameters) {
+write_DatFile <- function(dataList,listOfParameters) {
 
   outPath <- paste0(listOfParameters$outDir,"/",listOfParameters$outputFilename)
   outputFileName <-  paste0(outPath,".dat")
@@ -119,23 +120,23 @@ write_DatFile <- function(hydraData,listOfParameters) {
 
   # write all inputs to file with comment headers
   cat("# init_int debug",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$debugState),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$debugState),file=outputFileName,fill=TRUE,append=TRUE)
   cat("# init_int Nyrs",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$Nyrs),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$Nyrs),file=outputFileName,fill=TRUE,append=TRUE)
   cat("# init_int Nspecies",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$Nspecies),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$Nspecies),file=outputFileName,fill=TRUE,append=TRUE)
   cat("# init_int Nsizebins",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$Nsizebins),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$Nsizebins),file=outputFileName,fill=TRUE,append=TRUE)
   cat("# init_int Nareas",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$Nareas),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$Nareas),file=outputFileName,fill=TRUE,append=TRUE)
   cat("# init_int Nfleets",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$Nfleets),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$Nfleets),file=outputFileName,fill=TRUE,append=TRUE)
   cat("# init_number wtconv",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$wtconv),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$wtconv),file=outputFileName,fill=TRUE,append=TRUE)
   # speciesList
   cat("#",file=outputFileName,fill=TRUE,append=TRUE)
   cat("# List of Species in Model",file=outputFileName,fill=TRUE,append=TRUE)
-  for (sp in hydraData$speciesList) {
+  for (sp in dataList$speciesList) {
     cat(c("#",sp),file=outputFileName,fill=TRUE,append=TRUE)
   }
   cat("#",file=outputFileName,fill=TRUE,append=TRUE)
@@ -143,70 +144,70 @@ write_DatFile <- function(hydraData,listOfParameters) {
   # length bins
   cat("# init_matrix binwidth(1,Nspecies,1,Nsizebins)",file=outputFileName,fill=TRUE,append=TRUE)
   #write.table(d$binwidth, file=outputFileName, row.names=FALSE, col.names=FALSE,append=TRUE,sep="\t")
-  for(sp in 1:hydraData$Nspecies) {
-    cat(c(" ",as.matrix(hydraData$binwidth[sp,])), file=outputFileName, fill=TRUE,append=TRUE,sep="\t")
+  for(sp in 1:dataList$Nspecies) {
+    cat(c(" ",as.matrix(dataList$binwidth[sp,])), file=outputFileName, fill=TRUE,append=TRUE,sep="\t")
   }
 
   # length- weight relationship. w = aL^b
   cat("# init_vector lenwt_a(1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$lenwta),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$lenwta),file=outputFileName,fill=TRUE,append=TRUE)
   cat("# init_vector lenwt_b(1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$lenwtb),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$lenwtb),file=outputFileName,fill=TRUE,append=TRUE)
   # covariate information, number of covariates
   cat("# init_int Nrecruitment_cov",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$NrecruitmentCov),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$NrecruitmentCov),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_int Nmaturity_cov ",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$NmaturityCov),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$NmaturityCov),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_int Ngrowth_cov",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$NgrowthCov),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$NgrowthCov),file=outputFileName,fill=TRUE,append=TRUE)
 
   # covariate time series  - recruitment, maturity, growth
   cat("#  init_matrix recruitment_cov(1,Nrecruitment_cov,1,Nyrs)",file=outputFileName,fill=TRUE,append=TRUE)
-  for (icov in 1:hydraData$NrecruitmentCov){
-    cat(c(" ",hydraData$recruitmentCov[icov,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  for (icov in 1:dataList$NrecruitmentCov){
+    cat(c(" ",dataList$recruitmentCov[icov,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
   cat("#  init_matrix maturity_cov(1,Nmaturity_cov,1,Nyrs)",file=outputFileName,fill=TRUE,append=TRUE)
-  for (icov in 1:hydraData$NmaturityCov){
-    cat(c(" ",hydraData$maturityCov[icov,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  for (icov in 1:dataList$NmaturityCov){
+    cat(c(" ",dataList$maturityCov[icov,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
   cat("#  init_matrix growth_cov(1,Ngrowth_cov,1,Nyrs)",file=outputFileName,fill=TRUE,append=TRUE)
-  for (icov in 1:hydraData$NgrowthCov){
-    cat(c(" ",hydraData$growthCov[icov,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  for (icov in 1:dataList$NgrowthCov){
+    cat(c(" ",dataList$growthCov[icov,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
   # observed (survey) biomass
   cat("#   init_3darray obs_survey_biomass(1,Nareas,1,Nspecies,1,Nyrs) ",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#   THESE ARE FROM ATLANTIS AND SHOULD NOT BE USED IN FITTING: REPLACE WITH SURVEY DATA",file=outputFileName,fill=TRUE,append=TRUE)
-  for (idata in 1:hydraData$Nspecies){
-    cat(c(" ",hydraData$observedBiomass[idata+1,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  for (idata in 1:dataList$Nspecies){
+    cat(c(" ",dataList$observedBiomass[idata+1,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
   # observed catch
   cat("#   init_3darray obs_catch_biomass(1,Nareas,1,Nspecies,1,Nyrs) ",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#   THESE ARE FROM ASSESSMENTS see Catches.xls placeholder for real catch data",file=outputFileName,fill=TRUE,append=TRUE)
-  for (idata in 1:hydraData$Nspecies){
-    cat(c(" ",hydraData$observedCatch[idata+1,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  for (idata in 1:dataList$Nspecies){
+    cat(c(" ",dataList$observedCatch[idata+1,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
   # observed effort
   cat("#  init_3darray obs_effort(1,Nareas,1,Nfleets,1,Nyrs)  ",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c("# fleet types",hydraData$fleetNames),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c("# fleet types",dataList$fleetNames),file=outputFileName,fill=TRUE,append=TRUE)
   if (listOfParameters$scenarioFlag =="assessment") {
     cat("#  effort based on q with Exploitation Rate = ",listOfParameters$maxExploitationRate/100,". Manufactured effort for simulation runs",file=outputFileName,fill=TRUE,append=TRUE)
   }else{
     cat("#  Observed effort. No assessment",file=outputFileName,fill=TRUE,append=TRUE)
   }
-  for (idata in 1:hydraData$Nfleets){
-    cat(c(" ",hydraData$observedEffort[idata+1,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  for (idata in 1:dataList$Nfleets){
+    cat(c(" ",dataList$observedEffort[idata+1,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
   # intake stomach content
   cat("#  init_4darray area1_stomwt(1,Nareas,1,Nspecies,1,Nyrs,Nsizebins)   ",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  read in mean stomach content weight time series from .dat file for intake calculation   ",file=outputFileName,fill=TRUE,append=TRUE)
 
-  for (sp in 1:hydraData$Nspecies) {
-    cat(c("# ",hydraData$speciesList[sp]),file=outputFileName,fill=TRUE,append=TRUE)
-    for (iy in 1:hydraData$Nyrs) {
-      cat(c(" ",hydraData$intakeStomach[sp,]),file=outputFileName,fill=TRUE,append=TRUE)
+  for (sp in 1:dataList$Nspecies) {
+    cat(c("# ",dataList$speciesList[sp]),file=outputFileName,fill=TRUE,append=TRUE)
+    for (iy in 1:dataList$Nyrs) {
+      cat(c(" ",dataList$intakeStomach[sp,]),file=outputFileName,fill=TRUE,append=TRUE)
     }
 
   }
@@ -215,193 +216,193 @@ write_DatFile <- function(hydraData,listOfParameters) {
   cat("#   init_matrix obs_temp(1,Nareas,1,Nyrs)      ",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  Either observed temperature  or manufactured temperature for simulation runs",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#1977 to 1997 Georges Bank bottom temp from 2011 ESR (1964-1976 set to 8.0) and 1998 to 2010 Georges Bank bottom temp from 2011 ESR",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$observedTemperature[2,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$observedTemperature[2,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # estimation phases
   cat("#  init_int yr1Nphase            //year 1 N at size estimation phase",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$yr1Nphase),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$yr1Nphase),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_int recphase				//recruitment parameter estimation phas",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$recphase),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$recphase),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_int avg_rec_phase		//average recruitment estimation phase (could make species specific, currently global)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$avgRecPhase),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$avgRecPhase),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_int avg_F_phase			//average fishing mort estimation phase (could make species specific, currently global)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$avgFPhase),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$avgFPhase),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_int dev_rec_phase		//recruitment deviation estimation phase (could make species specific, currently global)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$devRecPhase),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$devRecPhase),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_int dev_F_phase			//fishing mort deviation estimation phase (could make species specific, currently global)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$devFPhase),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$devFPhase),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_int fqphase              //fishery q estimation phase",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$fqphase),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$fqphase),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_int sqphase              //survey q estimation phase ",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$sqphase),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$sqphase),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#   init_int ssig_phase           //survey sigma (obs error) phase",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$ssigPhase),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$ssigPhase),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_int csig_phase           //catch sigma (obs error) phase",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$csigPhase),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$csigPhase),file=outputFileName,fill=TRUE,append=TRUE)
 
   # stock recruitment parameters
   cat("#  init_matrix recGamma_alpha(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$alphaEggRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$alphaEggRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recGamma_shape(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model shape parameter",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$shapeEggRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$shapeEggRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recGamma_beta(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model beta",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$betaEggRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$betaEggRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recDS_alpha(1,Nareas,1,Nspecies)		//SSB Deriso-Schnute model alpha",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$alphaDS),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$alphaDS),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recDS_shape(1,Nareas,1,Nspecies)		//SSB Deriso-Schnute model shape parameter",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$shapeDS),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$shapeDS),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recDS_beta(1,Nareas,1,Nspecies)			//SSB Deriso-Schnute model beta",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$betaDS),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$betaDS),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recGamSSB_alpha(1,Nareas,1,Nspecies)		//SSB gamma alpha",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$alphaGamma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$alphaGamma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recGamSSB_shape(1,Nareas,1,Nspecies)		//SSB gamma shape parameter",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$shapeGamma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$shapeGamma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recGamSSB_beta(1,Nareas,1,Nspecies)			//SSB gamma model beta",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$betaGamma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$betaGamma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recRicker_alpha(1,Nareas,1,Nspecies)		//SSB Ricker model alpha",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$alphaRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$alphaRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recRicker_shape(1,Nareas,1,Nspecies)		//SSB Ricker model shape parameter=1.0, not used",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$shapeRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$shapeRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recRicker_beta(1,Nareas,1,Nspecies)			//SSB Ricker model beta",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$betaRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$betaRicker),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recBH_alpha(1,Nareas,1,Nspecies)		//SSB Beverton Holt model alpha",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$alphaBH),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$alphaBH),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recBH_shape(1,Nareas,1,Nspecies)		//SSB Beverton Holt model shape parameter=1.0, not used",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$shapeBH),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$shapeBH),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recBH_beta(1,Nareas,1,Nspecies)			//SSB Beverton Holt model beta",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$betaBH),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$betaBH),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recShepherd_alpha //SSB S-R Shepherd 3 param",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$alphaShepherd),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$alphaShepherd),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recShepherd_shape //SSB S-R Shepherd 3 param",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$shapeShepherd),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$shapeShepherd),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recShepherd_beta //SSB S-R Shepherd 3 param",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$betaShepherd),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$betaShepherd),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   cat("#  init_matrix recSHockey_alpha //SSB S-R Hockey 2 param",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$alphaHockey),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$alphaHockey),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recHpockey_shape //SSB S-R Hockey. S* breakpoint",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$shapeHockey),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$shapeHockey),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recHockey_beta //SSB S-R Hockey 2 param. This is not used",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$betaHockey),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$betaHockey),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   cat("#  init_matrix recSegmented_alpha //SSB S-R Segmented 3 param",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$alphaSegmented),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$alphaSegmented),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recSegmented_shape //SSB S-R Segmented 3 param. Breakpoint",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$shapeSegmented),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$shapeSegmented),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix recSegmented_beta //SSB S-R Segmented 3 param",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$betaSegmented),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$betaSegmented),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
 
 
   # recruitment type 1,2,3,4,5,6
   cat("#  init_ivector rectype(1,Nspecies)  //switch for alternate recruitment functions 1=gamma/Ricker, 2=Deriso-Schnute, 9=avg+devs
 # 3=SSB gamma, 4=SSB Ricker, 5=SSB Beverton Holt added April 2014,6=Shepherd (added Beet Mar 2017)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$recType),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$recType),file=outputFileName,fill=TRUE,append=TRUE)
 
   # recruitment stochasticity
   cat("#   init_ivector stochrec(1,Nspecies)  //switch for stochastic recruitment. 1 = add error, 0= no error",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$recStochastic),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$recStochastic),file=outputFileName,fill=TRUE,append=TRUE)
 
   # sex ratio
   cat("#  init_matrix sexratio(1,Nareas,1,Nspecies)  // this is proportion females",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$sexRatio),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$sexRatio),file=outputFileName,fill=TRUE,append=TRUE)
 
   # recruitment effects
   cat(" #  init_matrix recruitment_covwt(1,Nspecies,1,Nrecruitment_cov)	//recruitment covariate weighting factor",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
-    cat(c(" ",hydraData$recruitCovEffects[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
+  for (isp in 1:dataList$Nspecies) {
+    cat(c(" ",dataList$recruitCovEffects[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
 
   # fecundity
   cat("#//fecundity parameters from .dat file and calculate fecundity at length",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix fecund_d(1,Nareas,1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$fecundityd),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$fecundityd),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix fecund_h(1,Nareas,1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$fecundityh),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$fecundityh),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_3darray fecund_theta(1,Nareas,1,Nspecies,1,Nsizebins))",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
-    cat(c(" ",hydraData$fecundityTheta[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
+  for (isp in 1:dataList$Nspecies) {
+    cat(c(" ",dataList$fecundityTheta[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
 
   # maturity
   cat("#  init_matrix maturity_nu(1,Nareas,1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$maturityNu),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$maturityNu),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix maturity_omega(1,Nareas,1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$maturityOmega),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$maturityOmega),file=outputFileName,fill=TRUE,append=TRUE)
 
   # maturity covariate effects
   cat("#  init_matrix maturity_covwt(1,Nspecies,1,Nmaturity_cov) //maturity covariate weighting factor",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
-    cat(c(" ",hydraData$maturityCovEffects[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
+  for (isp in 1:dataList$Nspecies) {
+    cat(c(" ",dataList$maturityCovEffects[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
 
   # growth
   cat("#//growth parameters from .dat file and calculate simple (no cov) prob of growing through length interval",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix growth_psi(1,Nareas,1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$growthPsi),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$growthPsi),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix growth_kappa(1,Nareas,1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$growthKappa),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$growthKappa),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # growth covariate effects
   cat("#  init_matrix growth_covwt(1,Nspecies,1,Ngrowth_cov)// growth covariate weighting factor",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
-    cat(c(" ",hydraData$growthCovEffects[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
+  for (isp in 1:dataList$Nspecies) {
+    cat(c(" ",dataList$growthCovEffects[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
 
   cat("#  init_matrix vonB_Linf(1,Nareas,1,Nspecies)    //alternate parameterization, vonB growth",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$growthLinf),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$growthLinf),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix vonB_k(1,Nareas,1,Nspecies)       //alternate parameterization, vonB growth",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$growthK),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$growthK),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_vector growthtype                           //switch for alternate growth types,",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#1 power, 2 power/covariates, 3 vonB, 4 vonB covariates",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$growthType),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$growthType),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # phimax
   cat("#  init_number phimax",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$phimax),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$phimax),file=outputFileName,fill=TRUE,append=TRUE)
 
   # intake
   cat("#  init_matrix intake_alpha(1,Nareas,1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$intakeAlpha),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$intakeAlpha),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_matrix intake_beta(1,Nareas,1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$intakeBeta),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$intakeBeta),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # M1 - natural mortality (not explained by model)
   cat(" # M1 - natural mortality (not explained by model)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_3darray M1(1,Nareas,1,Nspecies,1,Nsizebins)",file=outputFileName,fill=TRUE,append=TRUE)
 
-  for (isp in 1:hydraData$Nspecies) {
-    cat(c(" ",hydraData$M1[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
+  for (isp in 1:dataList$Nspecies) {
+    cat(c(" ",dataList$M1[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
 
   # foodweb
   cat("#  init_3darray isprey(1,Nareas,1,Nspecies,1,Nspecies)     //preds in columns, prey in rows",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
-    cat(c(" ",hydraData$foodweb[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
+  for (isp in 1:dataList$Nspecies) {
+    cat(c(" ",dataList$foodweb[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
 
   # M2 size preference function
   cat("#  init_matrix preferred_wtratio(1,Nareas,1,Nspecies)     //pred sizebins",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$M2sizePrefMu),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$M2sizePrefMu),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("#  init_vector sd_sizepref(1,Nspecies)              //pred sizebins",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$M2sizePrefSigma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$M2sizePrefSigma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
 
   # fishery selectivity
   # need to reformat for cat function
-  fisherySelectc <- format(as.matrix(hydraData$fisherySelectivityc),digits=5)
-  fisherySelectd <- format(as.matrix(hydraData$fisherySelectivityd),digits=5)
+  fisherySelectc <- format(as.matrix(dataList$fisherySelectivityc),digits=5)
+  fisherySelectd <- format(as.matrix(dataList$fisherySelectivityd),digits=5)
 
   cat("#  //fishery selectivity pars from dat file, for now not area specific",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix fishsel_c(1,Nspecies,1,Nfleets)  //fishery selectivity c par",file=outputFileName,fill=TRUE,append=TRUE)
   cat("  #benthic trawl and pelagic trawl and longline",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
+  for (isp in 1:dataList$Nspecies) {
     cat(c(" ",fisherySelectc[isp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
   cat("#  init_matrix fishsel_d(1,Nspecies,1,Nfleets)  //fishery selectivity d par",file=outputFileName,fill=TRUE,append=TRUE)
   cat("  #benthic trawl and pelagic trawl and longline",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
+  for (isp in 1:dataList$Nspecies) {
     cat(c(" ",fisherySelectd[isp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
@@ -413,108 +414,108 @@ write_DatFile <- function(hydraData,listOfParameters) {
   cat("# Following content added after ICES publication by Gaichas et al. 2014",file=outputFileName,fill=TRUE,append=TRUE)
   cat("# Made by Andy Beet from Dec 2016 onward",file=outputFileName,fill=TRUE,append=TRUE)
   cat("# Equilibrium Biomass. B0(1,Nspecies). Tthese values are obtained by running hydra_sim without any error and zero fishing effort",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$B0),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$B0),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # guild number + membership
   cat("#number of Guilds numGuilds.",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$numGuilds),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$numGuilds),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   cat(c("#Guild Membership guildMembership. "),file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$guildMembership),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$guildMembership),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # assessment thresholds and exploiation and step/linear ramp
   cat("# AssessmentPeriod. Time period (yrs) to assess guild biomass level",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$assessmentPeriod),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$assessmentPeriod),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   cat("# init_int flagLinearRamp. // 0 = step function, 1 = linear function",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$flagLinearRamp),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$flagLinearRamp),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   cat("# init_vector minMaxExploitation(1,2) - [MinExploitation, MaxExploitation",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$minMaxExploitation),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$minMaxExploitation),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("# init_vector minMaxThreshold(1,2) - [MinThreshold, MaxThreshold",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$minMaxThresholds),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$minMaxThresholds),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
 
 
 
   cat("# Nthresholds. number of thresholds used for change in exploitation/fishing - Step function",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$Nthresholds),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$Nthresholds),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   cat("# threshold_percent(1,Nthresholds) threshold %ages (of biomass) when action is taken - Step function",file=outputFileName,fill=TRUE,append=TRUE)
   cat("# note that must appear in ascending order",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$thresholds),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$thresholds),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("# exploitation_levels(1,Nthresholds). these must pair with the threshold_percent values - Step function",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$exploitationLevels),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$exploitationLevels),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # species specific addition to threshold
   cat("# threshold_species(1,Nspecies). Species level detection threshold",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$thresholdSpecies),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$thresholdSpecies),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # assessment switches
   cat("# int AssessmentOn. Assessment On or Off",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$assessmentOn),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$assessmentOn),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat("# int speciesDetection. include species (in addition to guild) in assessment on or off",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$assessmentWithSpeciesOn),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$assessmentWithSpeciesOn),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
     # large fish index cut off for large fish (cm)
   cat("# int LFI_size. (cm). Threshold to determin a large fish. used in LFI metric",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$LFISize),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$LFISize),file=outputFileName,fill=TRUE,append=TRUE)
   cat("# init_number scaleInitialN.  used to scale initial yr1N abundances found in .pin file",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$scaleInitialN),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$scaleInitialN),file=outputFileName,fill=TRUE,append=TRUE)
   cat("# other food term",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$otherFood),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$otherFood),file=outputFileName,fill=TRUE,append=TRUE)
 
   # scaling effort due to NEUS shel effort and not GB effort.
   cat("#init_matrix effortScaled(1,Nareas,1,Nspecies)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$scaledEffort),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$scaledEffort),file=outputFileName,fill=TRUE,append=TRUE)
 
   # discard coeffiecients
   cat("# init_4darray discard_Coef(1,Nareas,1,Nspecies,1,Nfleets,1,Nsizebins)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("# proportion of each species that is discarded for each fleet(Bottom, Pelagic, Fixed)",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
-    cat(paste0("# ",hydraData$speciesList[isp]," fleet x sizeclass"),file=outputFileName,fill=TRUE,append=TRUE)
-    for (ifleet in 1:hydraData$Nfleets) {
-      rowNum <- ((isp-1)*hydraData$Nfleets) + ifleet
-      cat(c(" ",hydraData$discardCoef[rowNum,]),file=outputFileName,fill=TRUE,append=TRUE)
+  for (isp in 1:dataList$Nspecies) {
+    cat(paste0("# ",dataList$speciesList[isp]," fleet x sizeclass"),file=outputFileName,fill=TRUE,append=TRUE)
+    for (ifleet in 1:dataList$Nfleets) {
+      rowNum <- ((isp-1)*dataList$Nfleets) + ifleet
+      cat(c(" ",dataList$discardCoef[rowNum,]),file=outputFileName,fill=TRUE,append=TRUE)
     }
   }
   # survival coefficients
   cat("# init_4darray discardSurvival_Coef(1,Nareas,1,1,Nspecies,1,Nfleets,1,Nsizebins)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("# proportion of discards that survive being thrown back",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
-    cat(paste0("# ",hydraData$speciesList[isp]," fleet x sizeclass"),file=outputFileName,fill=TRUE,append=TRUE)
-    for (ifleet in 1:hydraData$Nfleets) {
-      rowNum <- ((isp-1)*hydraData$Nfleets) + ifleet
-      cat(c(" ",hydraData$discardSurvival[rowNum,]),file=outputFileName,fill=TRUE,append=TRUE)
+  for (isp in 1:dataList$Nspecies) {
+    cat(paste0("# ",dataList$speciesList[isp]," fleet x sizeclass"),file=outputFileName,fill=TRUE,append=TRUE)
+    for (ifleet in 1:dataList$Nfleets) {
+      rowNum <- ((isp-1)*dataList$Nfleets) + ifleet
+      cat(c(" ",dataList$discardSurvival[rowNum,]),file=outputFileName,fill=TRUE,append=TRUE)
     }
   }
 
   # predator or prey - binary - for indices
   cat("# predOrPrey(1,Nspecies). binary vector indicating predators. inverse = prey",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$predOrPrey),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$predOrPrey),file=outputFileName,fill=TRUE,append=TRUE)
 
   # bandidth for smoother for catch sd.
   cat("# bandwidth_metric. (in yrs) for variance estimate of catch - moving window",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$bandwidthMetric),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$bandwidthMetric),file=outputFileName,fill=TRUE,append=TRUE)
 
   # flag for MSE or not. Determins output files only
   cat("# init_number baseline_threshold // value of threshold that we stop landing catch. Typically 0.2",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$baselineThreshold),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$baselineThreshold),file=outputFileName,fill=TRUE,append=TRUE)
 
   # fishery q indicator
   cat("# init_3darray indicator_fishery_q(1,Nareas,1,Nspecies,1,Nfleets)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("# which species represent targeted catch. These are used to estmate exploitation rate in assessment",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
-    cat(c(" ",hydraData$indicatorFisheryq[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
+  for (isp in 1:dataList$Nspecies) {
+    cat(c(" ",dataList$indicatorFisheryq[isp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
 
   # AR parameters for  Survey, recruitment and Catch
   cat("# AR_parameters(1,3) Survey, recruitment, Catch ",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$ARParameters),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$ARParameters),file=outputFileName,fill=TRUE,append=TRUE)
 
   # flag for MSE or not. Determins output files only
   cat("# init_int flagMSE determins level of output (0 or 1)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$flagMSE),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$flagMSE),file=outputFileName,fill=TRUE,append=TRUE)
 
 
   # end of file
@@ -525,7 +526,7 @@ write_DatFile <- function(hydraData,listOfParameters) {
 }
 
 
-write_PinFile <- function(hydraData,listOfParameters){
+write_PinFile <- function(dataList,listOfParameters){
 
   outPath <- paste0(listOfParameters$outDir,"/",listOfParameters$outputFilename)
   outputFileName <-  paste0(outPath,".pin")
@@ -553,8 +554,8 @@ write_PinFile <- function(hydraData,listOfParameters){
   cat("#  init_3darray yr1N(1,Nareas,1,Nspecies,1,Nsizebins)       //initial year N at size, millions",file=outputFileName,fill=TRUE,append=TRUE)
 
   # need to reformat for cat function
-  Y1Nformat <- format(as.matrix(hydraData$Y1N),digits=7)
-  for (sp in 1:hydraData$Nspecies) {
+  Y1Nformat <- format(as.matrix(dataList$Y1N),digits=7)
+  for (sp in 1:dataList$Nspecies) {
     cat(c(" ",Y1Nformat[sp,]),file=outputFileName,fill=TRUE,append=TRUE)
   }
 
@@ -562,49 +563,49 @@ write_PinFile <- function(hydraData,listOfParameters){
   # When we decide to forgo backward compatibility this will be deleted.
   cat("#//recruitment parameters from .pin file (now alts by spp read in from dat file; these defaults replaced in preliminary calcs)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix recGamma_alpha(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
-  cat(c(" ",hydraData$alphaEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$alphaEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix eggRicker_shape(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
-  cat(c(" ",hydraData$shapeEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$shapeEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix eggRicker_beta(1,Nareas,1,Nspecies)			//eggprod gamma Ricker model alpha ",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
-  cat(c(" ",hydraData$betaEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$betaEggRicker),file=outputFileName,fill=TRUE,append=TRUE)
 
   # redundant inputs recruitment Devs etc. never used.
   cat("#  //recruitment: average annual, annual devs, actual (avg+dev)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_matrix avg_recruitment(1,Nareas,1,Nspecies,avg_rec_phase)  //average annual recruitment by area, species ",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#logspace (scaled by eye to produce flatline pops with pred mort but no fishing) ",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$redundantAvgRec),file=outputFileName,fill=TRUE,append=TRUE)
+  cat(c(" ",dataList$redundantAvgRec),file=outputFileName,fill=TRUE,append=TRUE)
 
   cat("#  init_3darray recruitment_devs(1,Nareas,1,Nspecies,1,Nyrs,dev_rec_phase)  //recruitment deviations by area, species",file=outputFileName,fill=TRUE,append=TRUE)
-  for (sp in 1:hydraData$Nspecies) {
-    cat(c(" ",hydraData$redundantRecDevs[sp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  for (sp in 1:dataList$Nspecies) {
+    cat(c(" ",dataList$redundantRecDevs[sp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
   # recruitment sigma from S-R fits
   cat("#   init_matrix recsigma(1,Nareas,1,Nspecies)  //recruitment sigma",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",format(hydraData$recSigma,digits=8)),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",format(dataList$recSigma,digits=8)),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # fishery Q's
  # format for cat function
-  fishQ <- format(as.matrix(hydraData$fisheryq),digits=7)
+  fishQ <- format(as.matrix(dataList$fisheryq),digits=7)
   cat("# Fishery qs",file=outputFileName,fill=TRUE,append=TRUE)
   cat("#  init_3darray fishery_q(1,Nareas,1,Nspecies,1,Nfleets,fqphase)",file=outputFileName,fill=TRUE,append=TRUE)
   cat("# area1.btrawl ptrawl longline)",file=outputFileName,fill=TRUE,append=TRUE)
-  for (isp in 1:hydraData$Nspecies) {
-    cat(c(" ",fishQ[isp,]," #",rownames(hydraData$fisheryq)[isp]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  for (isp in 1:dataList$Nspecies) {
+    cat(c(" ",fishQ[isp,]," #",rownames(dataList$fisheryq)[isp]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
 
   # survey q
   cat("#  init_matrix survey_q(1,Nareas,1,Nspecies,sqphase)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$surveyq),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$surveyq),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   # survey sigma (observation error)
   cat("#  init_matrix surv_sigma(1,Nareas,1,Nspecies,ssig_phase)",file=outputFileName,fill=TRUE,append=TRUE)
-  cat(c(" ",hydraData$surveySigma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$surveySigma),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # fishery sigma (catch obs eror)
   cat("#  init_3darray catch_sigma(1,Nareas,1,Nspecies,1,Nfleets,csig_phase)",file=outputFileName,fill=TRUE,append=TRUE)
-  fishSigq <- format(as.matrix(hydraData$fisherySigma),digits=NULL)
-  for (isp in 1:hydraData$Nspecies) {
+  fishSigq <- format(as.matrix(dataList$fisherySigma),digits=NULL)
+  for (isp in 1:dataList$Nspecies) {
     cat(c(" ",fishSigq[isp,]),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   }
 
