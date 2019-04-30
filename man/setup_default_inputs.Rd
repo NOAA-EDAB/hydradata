@@ -26,7 +26,7 @@ Default = "none"}
 
 \item{outputFilename}{Character string: Name of the (.dat and .pin) output files. Default = "hydra_sim"}
 
-\item{fillLengthInteger:}{number of character that exist on a line in the output files. If too small. The data wrap to following line. This causes an error at run time. Default = 2000}
+\item{fillLengthInteger}{number of character that exist on a line in the output files. If too small. The data wrap to following line. This causes an error at run time. Default = 2000}
 }
 \value{
 A list containing the same variables
