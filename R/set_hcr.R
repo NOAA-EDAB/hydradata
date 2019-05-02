@@ -10,7 +10,7 @@
 #' @param minMaxExploitations Numeric vector (1x2): Specifying the minimum and maximum exploitation levels at \code{minMaxThresholds}
 #' @param increment Numeric Scalar: increment to evaluate the number of scenarios between \code{minMaxExploitations}
 #'
-#' @return A list identical to \code{\link{hydraData}} with the fields below updated
+#' @return A list identical to \code{\link{hydraDataList}} with the fields below updated
 #'
 #' @section Updated fields:
 #'

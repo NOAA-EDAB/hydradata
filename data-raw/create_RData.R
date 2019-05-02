@@ -7,8 +7,8 @@ create_RData <- function() {
   p <- get_PinData(path)
 
   # add all of fields to hydraData
-  hydraData <- d
-  hydraData <- modifyList(hydraData,p)
+  hydraDataList <- d
+  hydraDataList <- modifyList(hydraDataList,p)
 
   # save each one as an RData file to lazily load with package
   # for (eachName in names(d)){
@@ -22,7 +22,7 @@ create_RData <- function() {
   #   save(list=eachName,file=paste0("data/",eachName,".rda"))
   # }
 
-  devtools::use_data(hydraData,overwrite = TRUE)
+  devtools::use_data(hydraDataList,overwrite = TRUE)
 
 }
 

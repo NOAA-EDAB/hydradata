@@ -20,7 +20,7 @@ set_hcr(currentData = hydradata::hydraData, Nthresholds = 5,
 \item{increment}{Numeric Scalar: increment to evaluate the number of scenarios between \code{minMaxExploitations}}
 }
 \value{
-A list identical to \code{\link{hydraData}} with the fields below updated
+A list identical to \code{\link{hydraDataList}} with the fields below updated
 }
 \description{
 Harvest control rules are evaluated using either a step function or a continuous linear function. For a continuous function all that is required

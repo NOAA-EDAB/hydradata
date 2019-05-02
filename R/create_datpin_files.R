@@ -4,7 +4,7 @@
 #'
 #'@param listOfParameters see \code{\link{setup_default_inputs}}
 #'@param dataList A data set comprising all necessary inputs. This data set can be the lazily loaded data set or it can be modified in any way
-#'to represent a faux assessment. See \code{\link{hydraData}} for details
+#'to represent a faux assessment. See \code{\link{hydraDataList}} for details
 #'
 #'@return updated list of lazily loaded data "hydraData"
 #'
