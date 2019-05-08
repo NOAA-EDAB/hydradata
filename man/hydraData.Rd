@@ -4,7 +4,7 @@
 \name{hydradata}
 \alias{hydradata}
 \alias{hydradata-package}
-\title{mshydradata: Manipulation of input data used in Hydra}
+\title{hydradata: Manipulation of input data used in Hydra}
 \description{
 Tools to aid in quickly changing and documenting input parameters to Hydra
 }
@@ -15,5 +15,5 @@ Tools to aid in quickly changing and documenting input parameters to Hydra
 \item creat .dat and .pin files used in running the multisecies model "Hydra"
 }
 
-To learn more about using \code{mshydradata}, start with the vignette: \code{browseVignettes(package="mshydradata")} or click \code{index} link below
+To learn more about using \code{hydradata}, start with the vignette: \code{browseVignettes(package="hydradata")} or click \code{index} link below
 }
