@@ -13,10 +13,10 @@ LazyData: true
 RoxygenNote: 6.1.0
 Suggests: knitr,
     rmarkdown,
+    igraph,
     testthat
 VignetteBuilder: knitr
 Imports: graphics,
-    igraph,
     NetIndices,
     bipartite,
     viridis,

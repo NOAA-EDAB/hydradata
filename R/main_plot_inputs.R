@@ -6,6 +6,9 @@
 
 
 main_plot_inputs <- function(outPath,inputData){
+  if(!requireNamespace("igraph",quietly = TRUE)){
+    stop("Package igraph needed for documentation to work. Please install it from CRAN",call. = F)
+  }
   ######################## plot observational data #############################
   ##############################################################################
   plot_Y1N_Biomass_lengthweight_bins(outPath,inputData)
