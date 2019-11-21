@@ -6,6 +6,8 @@ create_RData <- function() {
   d <- get_DatData(path)
   p <- get_PinData(path)
 
+  d$recName <- rep("segmented",d$Nspecies) # this is a hack. NEED to sort out data inputs
+
   # add all of fields to hydraData
   hydraDataList <- d
   hydraDataList <- modifyList(hydraDataList,p)
