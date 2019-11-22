@@ -4,7 +4,7 @@
 \alias{set_hcr}
 \title{sets up Harvest Control Rules (HCR)}
 \usage{
-set_hcr(currentData = hydradata::hydraData, Nthresholds = 5,
+set_hcr(currentData = hydradata::hydraDataList, Nthresholds = 5,
   minMaxThresholds = c(0.1, 0.4), minMaxExploitations = c(0.05, 0.4),
   increment = 0.05)
 }

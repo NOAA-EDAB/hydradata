@@ -30,7 +30,7 @@
 #'
 #' @export
 
-set_hcr <- function(currentData=hydradata::hydraData, Nthresholds=5, minMaxThresholds=c(0.1,0.4), minMaxExploitations=c(0.05,0.4), increment=.05) {
+set_hcr <- function(currentData=hydradata::hydraDataList, Nthresholds=5, minMaxThresholds=c(0.1,0.4), minMaxExploitations=c(0.05,0.4), increment=.05) {
 
   # update thresholds used
   currentData$thresholds <- c(seq(from=minMaxThresholds[1],to=minMaxThresholds[2],length.out=Nthresholds-1),1e06)
