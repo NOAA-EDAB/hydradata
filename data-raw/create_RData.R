@@ -24,7 +24,7 @@ create_RData <- function() {
   #   save(list=eachName,file=paste0("data/",eachName,".rda"))
   # }
 
-  devtools::use_data(hydraDataList,overwrite = TRUE)
+  usethis::use_data(hydraDataList,overwrite = TRUE)
 
 }
 
