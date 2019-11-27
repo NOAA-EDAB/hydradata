@@ -384,7 +384,7 @@ knitr::kable(data$maturityCovEffects)
 
 
 
-## Fecundity 
+## Fecundity {.tabset .tabset-pills} 
 Fecundity rates only important in egg production. Typically unused.
 
 $$Fecundity_{\; i,j} = d_{i}\theta_{i,j} l_{i,j}^{\; \;h_{i}}$$
@@ -393,9 +393,19 @@ where $d_{i}$ and $h_{i}$ are species specific parameters,
 $\theta_{i,j}$ are species/sizeclass specific parameters.
 $l_{i,j}$ is the lengh of species i at the midpoint of size class j.
 
+### Fecundity function
 
 ```{r, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_Fecundity.png"))
+```
+
+### Data
+
+
+```{r, fecund_data, out.width = "800px", echo=FALSE}
+df <- cbind(data$fecundityd,data$fecundityh,data$fecundityTheta)
+colnames(df) <- c("d","h",colnames(data$fecundityTheta))
+knitr::kable(df,caption="Parameter values for the fecundity function")
 ```
 
 # Predation
