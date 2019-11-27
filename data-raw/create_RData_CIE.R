@@ -159,7 +159,7 @@ get_DatData <- function(path){
   d$sexRatio <- unlist(sexRatio)
 
   # recruitment covariate effects. # columns = d$Nrecruitment_cov
-  rec_covEffects <- read.csv(paste0(path,"/recruitment_covariateEffects.csv"),header=TRUE)
+  rec_covEffects <- read.csv(paste0(path,"/recruitment_covariateEffects.csv"),header=TRUE,row.names=1)
   d$recruitCovEffects <- as.matrix(rec_covEffects)
 
   # fecundity
@@ -175,7 +175,7 @@ get_DatData <- function(path){
   d$maturityNu <- unlist(maturity["nu",])
   d$maturityOmega <- unlist(maturity["omega",])
 
-  maturity_covEffects <- read.csv(paste0(path,"/maturity_covariateEffects.csv"),header=TRUE)
+  maturity_covEffects <- read.csv(paste0(path,"/maturity_covariateEffects.csv"),header=TRUE,row.names=1)
   d$maturityCovEffects <- as.matrix(maturity_covEffects)
 
   # growth
@@ -186,7 +186,7 @@ get_DatData <- function(path){
   d$growthK <- unlist(growth["k",])
   d$growthType <- unlist(growth["growthType",])
 
-  growth_covEffects <- read.csv(paste0(path,"/growth_covariateEffects.csv"),header=TRUE)
+  growth_covEffects <- read.csv(paste0(path,"/growth_covariateEffects.csv"),header=TRUE,row.names=1)
   d$growthCovEffects <- as.matrix(growth_covEffects)
 
   # intake
