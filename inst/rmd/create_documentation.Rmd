@@ -21,6 +21,7 @@ params:
 outSpecies <- "speciesjpgs"
 outPath <- params$dir
 data <- params$data
+years <- data$observedTemperature["year",]
 
 ```
 Hydra is a length based multispecies, multifleet model, focused on Georges Bank, based on the concept of place based management, a defining requirement for Ecosystem based fisheries Management (EBFM). The set of species represented in this model account for ~90 of landings of all fish species on Georges Bank over the period of 1977-2014.
@@ -194,16 +195,16 @@ Each species in the model grows according to either
 
 * The Von Bertalannfy growth function  
 
-$$l_{i,t}=L_{\infty}(1-e^{-k_{i}(t-t_{i,o})})e^{\Sigma\alpha_{p}X_{p,t} }$$
+$$l_{i,t}=L_{\infty}(1-e^{-k_{i}(t-t_{i,o})})e^{\Sigma\alpha_{i,p}X_{p,t} }$$
 
 * or exponential growth function
 
-$$l_{i,t}=\psi_{i} a_{i}^{\kappa_i}e^{\Sigma\alpha_{p}X_{p,t} }$$
+$$l_{i,t}=\psi_{i} a_{i}^{\kappa_i}e^{\Sigma\alpha_{i,p}X_{p,t} }$$
 where
 $l_{i,t}$ is length of species i at time t, 
 $L_{\infty}$ is asymptotic length of species i, 
 $a_{i}$ is age of species i, 
-$\kappa_{i}$ and $\psi_i$ are model parameters and $\alpha_{p}$ is the effect of covariate $X_{p,t}$ at time t.
+$\kappa_{i}$ and $\psi_i$ are model parameters and $\alpha_{i,p}$ is the effect of covariate $X_{p,t}$ at time t on species i.
 
 
 These curves were fit to data outside of the model. Only parameter values are passed to Hydra
@@ -227,6 +228,17 @@ Type:
 df <- cbind(data$growthType,data$growthK,data$growthLinf,data$growthKappa,data$growthPsi)
 colnames(df) <- c("Type","K","Linf","Kappa","Psi")
 knitr::kable(df)
+```
+
+### Covariates
+
+
+```{r, growth_cov, out.width = "800px", echo=FALSE}
+message(paste0("The number of covariates influencing maturity = ",data$NgrowthCov))
+for (iplot in 1:data$NgrowthCov){
+  plot(years,data$growthCov,type ="b",ylab=rownames(data$growthCov)[iplot])
+}
+knitr::kable(data$growthCovEffects)
 ```
 
 ## Size class {.tabset .tabset-pills} 
@@ -263,34 +275,34 @@ knitr::kable(data$binwidth)
 ## Stock Recruitment {.tabset .tabset-pills} 
 The general form for recruitment follows:
 
-$$ R_t = f(S_{t-1},\theta)e^{\epsilon_t + \Sigma\alpha_{p}X_{p,t}}$$
-where $R_t$ is recruitment at time t, $S_t$ is spawning stock biomass at time t, $\theta$ is a vector of model parameters, and $\epsilon_t$ is gaussian error. $\alpha_{p}$ is the effect of covariate $X_{p,t}$ at time t.
+$$ R_t = f(S_{t-1},\theta)e^{\epsilon_t + \Sigma\alpha_{i,p}X_{p,t}}$$
+where $R_t$ is recruitment at time t, $S_t$ is spawning stock biomass at time t, $\theta$ is a vector of model parameters, and $\epsilon_t$ is gaussian error. $\alpha_{p}$ is the effect of covariate $X_{p,t}$ at time t on species i.
 
 Hydra implements several specific forms for $f(S_{t-1},\theta)$
 
-* Deriso- Schnute
+* Deriso- Schnute (recType = 2)
 
 $$f(S_{t-1},\theta) = \alpha S_{t-1} (1-\beta\gamma S_{t-1})^{\frac{1}{\gamma} }$$ 
 
-* Gamma
+* Gamma (recType = 3)
 
 $$f(S_{t-1},\theta) = \alpha S_{t-1}^\gamma e^{-\beta S_{t-1}}$$ 
 
-* Ricker (Gamma with $\gamma$ = 1)
+* Ricker (Gamma with $\gamma$ = 1) (recType = 4)
 
 $$f(S_{t-1},\theta) = \alpha S_{t-1} e^{-\beta S_{t-1}}$$ 
 
-* Beverton-Holt
+* Beverton-Holt (recType = 5)
 
 $$f(S_{t-1},\theta) = \frac{\alpha S_{t-1}}{ (1+\beta S_{t-1})}$$ 
 
 
-* Shepherd
+* Shepherd (recType = 6)
 
 $$f(S_{t-1},\theta) = \frac{\alpha S_{t-1}}{ (1+(\frac{S_{t-1}}{\beta})^\gamma)}$$ 
 Note for $\gamma$ = 1 this reduces to the Beverton holt and with $\gamma$ = 2 it approximates the Ricker form
 
-* Segmented (Piecewise Linear)
+* Segmented (Piecewise Linear) (recType = 8)
 
 $$ f(S_{t-1},\theta) = \alpha S_{t-1} \qquad \qquad \qquad \qquad \textrm{if} \quad S_{t-1} \le \delta $$
 
@@ -309,29 +321,68 @@ knitr::include_graphics(paste0(outPath,"/Hydra_StockRecruitment.png"))
 
 ### Data
 
-Parameter values also given for other forms (not used)
-
 ```{r, SR_data, out.width = "800px", echo=FALSE}
-df <- cbind(data$alphaSegmented,data$betaSegmented,data$shapeSegmented)
-colnames(df) <- c("alpha","Beta","shape")
-knitr::kable(df,caption="Segmented Parameter values. NEED to change")
+df <- cbind(data$alphaSegmented,data$betaSegmented,data$shapeSegmented,data$recType)
+colnames(df) <- c("$\\alpha$","$\\beta$","shape","recruitmentType")
+knitr::kable(df,caption="Parameter values for the selected recruitment function")
+```
+
+### Covariates
+
+```{r, SR_cov, out.width = "800px", echo=FALSE}
+message(paste0("The number of covariates influencing recruitment =  ",data$NrecruitmentCov))
+for (iplot in 1:data$NrecruitmentCov){
+  plot(years,data$recruitmentCov,type ="b",ylab=rownames(data$recruitmentCov)[iplot])
+}
+knitr::kable(data$recruitCovEffects)
+```
+
+### Other SR parameterizations 
+
+Default parameter values for other stock recruitment forms can be found by filtering `hydraDataList`. For example the values for Shepherd stock recruitment relationship can be found by typing
+```{r, SR_other, echo=TRUE, eval = TRUE}
+hydraDataList$alphaShepherd
+hydraDataList$betaShepherd
+hydraDataList$shapeShepherd
 ```
 
 
-## Maturity
+## Maturity {.tabset .tabset-pills} 
 Maturity determines the proportion of individuals in each size class capable of producing spawners at each time point
 
 
-$$ M_{i,j,t}= \frac{1}{1+exp(-\nu_i - \Omega_i l_{i,j} + \Sigma\alpha_{p}X_{p,t} )} $$
+$$ M_{i,j,t}= \frac{1}{1+exp(-\nu_i - \Omega_i l_{i,j} + \Sigma\alpha_{i,p}X_{p,t} )} $$
 where $\nu_{i}$ and $\Omega_{i}$ are species specific parameters, 
 $l_{i,j}$ is the lengh of species i at the midpoint of size class j.
-$\alpha_{p}$ is the effect of covariate $X_{p,t}$ at time t.
+$\alpha_{i,p}$ is the effect of covariate $X_{p,t}$ at time t on species i.
 
 There is an exception for dogfish where $M=0$ for all size classes except the largest size class where $M=1$. This mimics the fact that only the largest size class can reproduce
 
-```{r, out.width = "800px", echo=FALSE}
+### Maturity function
+
+```{r, mat_fig, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_Maturity.png"))
 ```
+
+### Data
+
+```{r, mat_data, out.width = "800px", echo=FALSE}
+df <- cbind(data$maturityNu,data$maturityOmega)
+colnames(df) <- c("$\\nu$","$\\Omega$")
+knitr::kable(df,caption="Parameter values for maturity")
+```
+
+### Covariates 
+
+```{r, mat_cov, out.width = "800px", echo=FALSE}
+message(paste0("The number of covariates influencing maturity = ",data$NmaturityCov))
+for (iplot in 1:data$NmaturityCov){
+  plot(years,data$maturityCov,type ="b",ylab=rownames(data$maturityCov)[iplot])
+}
+knitr::kable(data$maturityCovEffects)
+```
+
+
 
 ## Fecundity 
 Fecundity rates only important in egg production. Typically unused.

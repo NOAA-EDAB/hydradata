@@ -23,19 +23,19 @@ package?hydradata
 
 ## Steps 
 
-Note the following example updates the lazily loaded data `hydraData` using the same variable name. This is not a necessary requirment.
+Note the following example updates the lazily loaded data `hydraDataList` using the same variable name. This is not a necessary requirment.
 
 ### Change harvest control rule step function (step 1)
 
-To run a harvest control strategy using a step function (as opposed to a continuous linear function) then use the `set_hcr` function. For example, to produce a set of scenarios where exploitation is ramped down from a maximum (0.4:.02:.4) to a minumum of 0.04 over 5 discrete steps then the following will provide such a table which will replace the default table in the lazily loaded data set `hydraData`
+To run a harvest control strategy using a step function (as opposed to a continuous linear function) then use the `set_hcr` function. For example, to produce a set of scenarios where exploitation is ramped down from a maximum (0.4:.02:.4) to a minumum of 0.04 over 5 discrete steps then the following will provide such a table which will replace the default table in the lazily loaded data set `hydraDataList`
 
 ``` {r echo = TRUE}
-hydraData <- set_hcr(currentData=hydraData, Nthresholds=5, minMaxThresholds=c(0.1,0.4), minMaxExploitations=c(0.04,0.4), increment=.02)
-print(hydraData$exploitationOptions)
+hydraDataList <- set_hcr(currentData=hydraDataList, Nthresholds=5, minMaxThresholds=c(0.1,0.4), minMaxExploitations=c(0.04,0.4), increment=.02)
+print(hydraDataList$exploitationOptions)
 ```
 Each column represent a scenario with increasing values of exploitaion corresponding to assigned levels of thresholds
 ``` {r echo = TRUE}
-print(hydraData$thresholds)
+print(hydraDataList$thresholds)
 ```
 
 
@@ -53,14 +53,16 @@ This list should be manipulated by the user to reflect a scenario they wish to s
 
 For example to use Beverton Holt (recType = 5) stock recruitment relationships instead of the default (segmented linear, recType = 8), the user will need to set
 
-    `hydraData$recType <- rep(5,hydraData$Nspecies)`
+``` {r echo = TRUE,eval = FALSE}
+hydraDataList$recType <- rep(5,hydraDataList$Nspecies)
+```
     
-To see all of the the fields in `hydraData` type `?hydraData`
+To see all of the the fields in `hydraDataList` type `?hydraDataList`
 
 ### Create the data (.dat and .pin) files (step 4)
 
 ``` {r echo = TRUE,eval = FALSE}
-hydraData <- create_datpin_files(inputs,hydraData)
+hydraDataList <- create_datpin_files(inputs,hydraDataList)
 ```
 
 Two files are produced (.dat and .pin) based on the users preferences. They are created in the location specified by `inputs$outDir` with the name `inputs$outputFilename`
@@ -69,19 +71,19 @@ Two files are produced (.dat and .pin) based on the users preferences. They are 
 At this point you are ready to run Hydra. If however you'd like to document the run then:
 
 ``` {r echo = TRUE,eval = FALSE}
-create_documentation(outFile="documentation.html",outDir=getwd(),data = hydraData)
+create_documentation(outFile="documentation.html",outDir=getwd(),data = hydraDataList)
 ```
 
-where in this case your data file is `hydraData`. If however at step 4 you chose to name your output something other than `hydraData` then you'll need to pass this as your data.
+where in this case your data file is `hydraDataList`. If however at step 4 you chose to name your output something other than `hydraDataList` then you'll need to pass this as your data.
 
 HTML documentation is named as defined by `outFile` and along with accompanying plots are stored in `outDir`.
 
 
 ## Lazily loaded data
 
-Baseline data are lazily loaded in the package. They are in the form of a list called `hydraData`
+Baseline data are lazily loaded in the package. They are in the form of a list called `hydraDataList`
 
 ```{r data, echo = FALSE}
-str(hydraData)
+str(hydraDataList)
 ```
 
