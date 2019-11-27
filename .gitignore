@@ -10,6 +10,7 @@ inst/doc
 *.pin
 *.txt
 *.html
+*.png
 
 #folders
 figures
