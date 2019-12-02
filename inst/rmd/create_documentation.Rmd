@@ -10,6 +10,9 @@ output:
     toc_float: yes
   pdf_document:
     toc: yes
+bibliography: references.bib
+link-citations: true
+nocite: '@*'
 params:
   dir: "NAMESPACE"
   data: "NONE"
@@ -36,7 +39,7 @@ Hydra is designed to provide simulated data for two main purposes.
 
 The current model incorporates 10 interacting species on Georges Bank. The species undergo growth, recruitment, predation, and fishing. The health of the interacting species populations can be assessed at discrete intervals of time and harvest control rules implemented based on a set of predefined reference points. The structure and framework of the model lends itself well to Management Strategy Evaluation, a proposed future use.
 
-The model was first published in ICES: Gaichas et al. (2017). Combining stock, multispecies, and ecosystem level fishery objectives within an operational management procedure: simulations to start the conversation. 74(2). 552-565 https://doi.org/10.1093/icesjms/fsw119
+The model [@Gaichas2016] was first published in ICES.
 
 # Background
 
@@ -44,8 +47,13 @@ EXCERPTS FROM THE PAPER, CIE REVIEW, SHOW FLOW DIAGRAM ETC
 
 # Ecological Production Units (EPUs)
 
-REFERENCE FOGARTY PAPER.
-DESCRIBE STAT AREAS IN EACH 
+The Georges bank ecological production unit (RED) was defined using a combination of cluster analysis and principal component analysis based on a combination of physical (sea surface temperature, salinity, stratification etc.) and biological variables (chlorphyll, primary production, sediments). Details can be found in [@NOAA-EDAB-techdoc]
+
+```{r EPU_fig,  echo=FALSE}
+# EPUs
+knitr::include_graphics("figures/EPUs.jpg")
+```
+
 
 # Species in the model {.tabset .tabset-pills}
 
@@ -419,10 +427,10 @@ $$M2_{m,n,t} = \sum_{j}\sum_{k} I_{i,j,t}N_{i,j,t}\frac{\rho_{i,j,m,n}}{\Sigma_a
 
 M2 comprises several components:
  
-* Size Preference for prey by predator
-* weight ratio of prey:predator
-* length-weight relationship
-* Daily Food Intake 
+* [length-weight relationship]
+* [Weight Ratios] of prey:predator
+* [Size Preference] for prey by predator
+* Daily [Food Intake]
 
 ## Length-weight relationship {.tabset .tabset-pills} 
 
@@ -490,7 +498,7 @@ knitr::include_graphics(paste0(outPath,"/Hydra_weightRatio_monkfish.png"))
 
 
 ## Size Preference {.tabset .tabset-pills}
-Size Preference - log-normally distributed to have mean preference at ratio of 1/33 (Taken from Hall et al. 2006, Rochet et al. 2011)
+Size Preference - log-normally distributed to have mean preference at ratio of 1/33. Taken from [@Hall2006], [@Rochet2011]
 
 $$\theta_{n,j}=\frac{1}{\left(\frac{w_n}{w_j}\right)\sigma_j\sqrt(2\pi)}exp\left( -\frac{1}{2\sigma_j^2}\left(ln\left(\frac{w_n}{w_j}\right)-\psi_{j}\right)^2\right)$$
 
@@ -512,7 +520,7 @@ knitr::kable(df,caption="Parameter values for the size-preference function")
 
 
 ## Food Intake {.tabset .tabset-pills}
-Food Intake as a function of temperature for each size class. Stomach content data (Bowman & Michaels, 1984) used in conjunction with vacuation rates 
+Food Intake as a function of temperature for each size class. Stomach content data [@Bowman1984] used in conjunction with vacuation rates 
 
 $$I_{i,j,t} = 365*24\left[\alpha_i e^{\beta_i T_t}\right] \bar C_{i,j,t}$$
 where $\bar C_{i,j,t}$ is mean stomach content at time t for species i of size class j and $T_{t}$ is temperature at time t. 
@@ -569,7 +577,7 @@ where $s_{i,j,g}$ and  $q_{i,j,g}$ are time independent fishing selectivities an
 
 ## Fishing Effort 
 
-Historic fishing effort data for Georges Bank was compiled from the Commercial Fisheries database. Each designated fleet comprises multiple gear types. The Georges Bank region was defined using statistical areas. The resulting effort was standardized using the method of Mayo et al. 1992 to account for vessel size and gear type.
+Historic fishing effort data for Georges Bank was compiled from the Commercial Fisheries database. Each designated fleet comprises multiple gear types. The Georges Bank region was defined using statistical areas. The resulting effort was standardized using the method of [@Mayo1992] to account for vessel size and gear type.
 
 DEFINE GEAR TYPES ATTRIBUTED TO EACH FLEET USED
 REFERENCE MAYO ET AL PAPER FOR STANDARDIZATION
@@ -722,29 +730,48 @@ Environmental covariate data can be used to model [growth], [maturity] and [stoc
 knitr::include_graphics(paste0(outPath,"/Hydra_Covariates.png"))
 ```
 
-# Starting biomass and number of individuals
+# Starting biomass and number of individuals {.tabset .tabset-pills}
 
 Starting values are obtained by running the model with zero fishing effort.
+
+
+## Current form
 
 ```{r, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_Y1N_Biomass.png"))
 ```
 
+## Data
 
-# Assessment
+```{r, startBio_data, out.width = "800px", echo=FALSE}
+df <- data$Y1N
+knitr::kable(df,caption="Initial biomass values")
+```
+
+
+# Assessment {.tabset .tabset-pills}
 
 An assessment in Hydra is defined as an evaluation of the current state of the system. This evaluation results in the adoption of a harvest control rule. The frequency of an assessment is optional (once a year, every three years, etc.).
 
-Currently during an assessment a decision is made to reduce fishing effort based on B/B0 levels (In principal any other criterion or set of criteria could be used to assess the satte of the system). The following figures describe one possible set of harvest control rules. A step function is used to ramp down the exploitation rate (a function of effort) when the relative biomass falls below predefined levels. A a continuous ramp down harvest control rule is also an option.
+Currently during an assessment a decision is made to reduce fishing effort based on B/B0 levels (In principal any other criterion or set of criteria could be used to assess the satte of the system). The following figures describe one possible set of harvest control rules. A step function is used to ramp down the exploitation rate (a function of effort) when the relative biomass falls below predefined levels. A continuous ramp down harvest control rule is also implemented.
+
+## Harvest Control Rule
 
 Red line indicates the Exploitation level at the 20% biomass threshold
-
 
 ```{r, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_Assessment_Thresholds.png"))
 ```
 
-## Observed Biomass and Catch
+## Data 
+
+```{r, hcr_data, out.width = "800px", echo=FALSE}
+df <- cbind(data$thresholds,data$exploitationOptions)
+names(df) <- c("threshold",colnames(data$exploitationOptions))
+knitr::kable(df,caption="Exploitation levels and the threshold in which they are implemented")
+```
+
+# Observed Biomass and Catch
 
 These are used only in fitting the model. While this is not currently implemented the place holder is there for future use. The current biomass values have been taken from surveys and the catch from the Atlantis model.
 
@@ -758,5 +785,5 @@ knitr::include_graphics(paste0(outPath,"/Hydra_Biomass.png"))
 knitr::include_graphics(paste0(outPath,"/Hydra_Catch.png"))
 ```
 
-## References
+# References
 
