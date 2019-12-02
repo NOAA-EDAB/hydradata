@@ -555,11 +555,11 @@ Hydra implements 5 fleets
 
 Each fleet is defined by several characteristics: 
 
-* Selectivities. These are a measure of the selection process by fishing gear which causes the catch composition to be different from the general population. Worded in a different way it represents the probability of a fish remaining in the gear as a function of its size. It is used to control the impact of fishing on juveniles.
+* [Fishing Effort]
 
-* Catchabilities. Defined as fish caught per fish available per unit effort and per unit time. Worded in a different way it represents the probability of any single fish being caught 
+* [Selectivities]. These are a measure of the selection process by fishing gear which causes the catch composition to be different from the general population. Worded in a different way it represents the probability of a fish remaining in the gear as a function of its size. It is used to control the impact of fishing on juveniles.
 
-* Fishing effort
+* [Catchabilities]. Defined as fish caught per fish available per unit effort and per unit time. Worded in a different way it represents the probability of any single fish being caught 
 
 Total fishing mortality by fleet can be summarized as:
 
@@ -619,7 +619,7 @@ knitr::kable(df,caption="Parameter values for the selectivity parameter, d")
 
 
 
-## Fishing Catchabilities {.tabset .tabset-pills}
+## Catchabilities {.tabset .tabset-pills}
 
 WHERE DID THESE COME FROM?
 
@@ -631,9 +631,9 @@ knitr::include_graphics(paste0(outPath,"/Hydra_FishingQ.png"))
 
 ### Data
 
-```{r, selectivityd_data, out.width = "800px", echo=FALSE}
+```{r, catchability_data, out.width = "800px", echo=FALSE}
 df <- data$fisheryq
-knitr::kable(df,caption="Parameter values for the catchability")
+knitr::kable(df,digits=10,caption="Parameter values for the catchability")
 ```
 
 
