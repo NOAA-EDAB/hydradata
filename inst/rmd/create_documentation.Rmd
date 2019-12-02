@@ -408,9 +408,9 @@ colnames(df) <- c("d","h",colnames(data$fecundityTheta))
 knitr::kable(df,caption="Parameter values for the fecundity function")
 ```
 
-# Predation
+# Predation 
 
-## Predation (M2)
+## Predation (M2) 
 
 The biological interactions (predation) amongst species in multispecies models are a critical component. The predation rate is defined as M2
 
@@ -424,7 +424,7 @@ M2 comprises several components:
 * length-weight relationship
 * Daily Food Intake 
 
-## Length-weight relationship
+## Length-weight relationship {.tabset .tabset-pills} 
 
 The length-weight relationships are fit outside of Hydra.
 
@@ -432,12 +432,24 @@ $$ w_{i,j}=a_{i} {l_{i,j}}^{b_{i}}$$
 
 The parameters $a_{i}$ and $b_{i}$ are passed to Hydra. $l_{i,j}$ is the lengh of species i at the midpoint of size class j.
 
+### Current form
+
 ```{r, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_lengthWeight.png"))
 ```
 
+### Data
+
+```{r, pred_len_data, out.width = "800px", echo=FALSE}
+df <- cbind(data$lenwta,data$lenwtb)
+row.names(df) <- data$speciesList
+colnames(df) <- c("a","b")
+knitr::kable(df,caption="Parameter values for the length-weight relationship")
+```
+
+
 ## Weight Ratios  {.tabset .tabset-pills}
-Weight ratios are calculated using the ratios of weight at the midpoints of the size classes. Weights are calculated using the length-weight relationships. Weight-ratios are only relevant for predators and the species they prey on. The following figures show each predator and their prey (subplot). Each subplot shows predator size class along the x-axis and the ratio of prey to predator weight along the y-axis. (Weights are calculated from the midpoints of each size class based on section:[Length-weight relationship] ). Each line on a subplot represents the size class of a prey species and shows the weight ratio between predator size class and the prey for a given size class. The solid line represents the mean of the size preference function as shown in section: [Size Preference]
+Weight ratios are calculated using the ratios of weight at the midpoints of the size classes. Weights are calculated using the length-weight relationships. Weight-ratios are only relevant for predators and the species they prey on. The following figures show each predator and their prey (subplot). Each subplot shows predator size class along the x-axis and the ratio of prey to predator weight along the y-axis. (Weights are calculated from the midpoints of each size class based on section:[Length-weight relationship]). Each line on a subplot represents the size class of a prey species and shows the weight ratio between predator size class and the prey for a given size class. The solid line represents the mean of the size preference function as shown in section: [Size Preference]
 
 ### Spiny Dogfish
 
@@ -477,29 +489,61 @@ knitr::include_graphics(paste0(outPath,"/Hydra_weightRatio_monkfish.png"))
 
 
 
-## Size Preference
+## Size Preference {.tabset .tabset-pills}
 Size Preference - log-normally distributed to have mean preference at ratio of 1/33 (Taken from Hall et al. 2006, Rochet et al. 2011)
 
 $$\theta_{n,j}=\frac{1}{\left(\frac{w_n}{w_j}\right)\sigma_j\sqrt(2\pi)}exp\left( -\frac{1}{2\sigma_j^2}\left(ln\left(\frac{w_n}{w_j}\right)-\psi_{j}\right)^2\right)$$
 
 where $\frac{w_n}{w_j}$ is the ratio of prey of size n to predator of size j
 
+### Current form
+
 ```{r, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_SizePreference.png"))
 ```
 
-## Food Intake
+### Data
+
+```{r, size_pref_data, out.width = "800px", echo=FALSE}
+df <- t(rbind(data$M2sizePrefMu,data$M2sizePrefSigma))
+colnames(df) <- c("$\\mu$","$\\sigma$")
+knitr::kable(df,caption="Parameter values for the size-preference function")
+```
+
+
+## Food Intake {.tabset .tabset-pills}
 Food Intake as a function of temperature for each size class. Stomach content data (Bowman & Michaels, 1984) used in conjunction with vacuation rates 
 
 $$I_{i,j,t} = 365*24\left[\alpha_i e^{\beta_i T_t}\right] \bar C_{i,j,t}$$
-where $\bar C_{i,j,t}$ is mean stomach content at time t for species i of size class j and $T_{t}$ is temperateure at time t
+where $\bar C_{i,j,t}$ is mean stomach content at time t for species i of size class j and $T_{t}$ is temperature at time t. 
 
+### Current format
+
+This assumes that mean stomach content is constant through time
 
 ```{r, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_Intake.png"))
 ```
 
-# Fishing
+### Data
+
+Weights are in (g) and represent the mean stomach weight for a species' size class. This is assumed constant over time.
+
+```{r, intake_data, out.width = "800px", echo=FALSE}
+df <- cbind(data$intakeAlpha,data$intakeBeta,data$intakeStomach)
+colnames(df) <- c("$\\alpha$","$\\beta$",colnames(data$intakeStomach))
+knitr::kable(df,caption="Parameter values for the Food intake function")
+```
+
+### Temperature
+
+The temperature time series that influences intake is the observed temperatue time series.
+
+```{r, intake_temp_data, out.width = "800px", echo=FALSE}
+plot(data$observedTemperature["year",],data$observedTemperature["temperature",],type="b",ylab="$^\\circ$C",xlab="")
+```
+
+# Fishing 
 
 Hydra implements 5 fleets
 
@@ -509,17 +553,13 @@ Hydra implements 5 fleets
 * Fixed Gear Fleet - Fixed gill nets
 * Fixed Gear Fleet - Bottom longlines
 
-Each fleet has different characteristics:
+Each fleet is defined by several characteristics: 
 
-* Defined level of effort
-* Selectivities
+* Selectivities. These are a measure of the selection process by fishing gear which causes the catch composition to be different from the general population. Worded in a different way it represents the probability of a fish remaining in the gear as a function of its size. It is used to control the impact of fishing on juveniles.
 
-These are a measure of the selection process by fishing gear which causes the catch composition to be different from the general population. Worded in a different way it represents the probability of a fish remaining in the gear as a function of its size. It is used to control the impact of fishing on juveniles
+* Catchabilities. Defined as fish caught per fish available per unit effort and per unit time. Worded in a different way it represents the probability of any single fish being caught 
 
-* Catchabilities
-
-Defined as fish caught per fish available per unit effort and per unit time. Worded in a different way it represents the probability of any single fish being caught 
-
+* Fishing effort
 
 Total fishing mortality by fleet can be summarized as:
 
@@ -538,7 +578,7 @@ REFERENCE MAYO ET AL PAPER FOR STANDARDIZATION
 knitr::include_graphics(paste0(outPath,"/Hydra_Effort.png"))
 ```
 
-## Selectivities
+## Selectivities {.tabset .tabset-pills}
 Fishing Selectivities for gear type, g (fleet).
 
 $$s_{i,j,g}=\left[1+e^{-(c_{i,g}+d_{i,g}L_{i,j})}\right]^{-1}$$
@@ -557,18 +597,45 @@ The following figure shows the selectivities of each fleet for each species.
 
 * = Longline botom
 
+### Current form
 
 ```{r, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_Selectivities.png"))
 ```
 
-## Fishing Catchabilities
+### selecivity_c
+
+```{r, selectivityc_data, out.width = "800px", echo=FALSE}
+df <- data$fisherySelectivityc
+knitr::kable(df,caption="Parameter values for the selectivity parameter, c")
+```
+
+### selecivity_d
+
+```{r, selectivityd_data, out.width = "800px", echo=FALSE}
+df <- data$fisherySelectivityd
+knitr::kable(df,caption="Parameter values for the selectivity parameter, d")
+```
+
+
+
+## Fishing Catchabilities {.tabset .tabset-pills}
 
 WHERE DID THESE COME FROM?
+
+### Current form
 
 ```{r, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_FishingQ.png"))
 ```
+
+### Data
+
+```{r, selectivityd_data, out.width = "800px", echo=FALSE}
+df <- data$fisheryq
+knitr::kable(df,caption="Parameter values for the catchability")
+```
+
 
 ## Discard and survival probabilities {.tabset .tabset-pills}
 
@@ -690,4 +757,6 @@ knitr::include_graphics(paste0(outPath,"/Hydra_Biomass.png"))
 ```{r, out.width = "800px", echo=FALSE}
 knitr::include_graphics(paste0(outPath,"/Hydra_Catch.png"))
 ```
+
+## References
 
