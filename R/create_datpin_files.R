@@ -81,7 +81,44 @@ create_datpin_files <- function(listOfParameters,dataList){
     dataList$observedEffort[5,] <- rep(1E-6,dataList$Nyrs) # Effort = ex/mean(q)
     dataList$observedEffort[6,] <- rep(1E-6,dataList$Nyrs) # Effort = ex/mean(q)
 
-  } else if (tolower(listOfParameters$scenarioFlag) == "custom") {
+  } else if (tolower(listOfParameters$scenarioFlag) == "effort") {
+    options$assessmentOn <- 0
+    if (listOfParameters$assessmentSpeciesFlag == "none") {
+      options$assessmentWithSpeciesOn <- 0
+    } else {
+      options$assessmentWithSpeciesOn <- 1
+    }
+
+    if (tolower(listOfParameters$scenarioType) == "fixed") {
+      # all exploitations are the same
+      options$exploitationLevels <- rep(listOfParameters$maxExploitationRate/100,dataList$Nthresholds)
+      options$minMaxExploitation <- rep(listOfParameters$maxExploitationRate/100,2)
+    } else { #rampdown
+      # we have a ramp down scenario and the values in option$exploitation reflect this
+      options$minMaxExploitation <- c(min(options$exploitationLevels),max(options$exploitationLevels))
+    }
+
+    # effort needs to change to represent exploitation rate equal to rate specified by fleetEffortRates
+    for (ifleet in 1:dataList$Nfleets) {
+      fE <- as.numeric(dataList$fisheryq[,ifleet]) # pick out fishery q's
+      indicator <- dataList$indicatorFisheryq[,ifleet] # pick out species to be used in mean
+      fEInd <- fE*indicator
+      ind <- as.numeric(fEInd) > 1e-29 # find all > 1e-29
+      # first row is year
+
+      fleetRate <- listOfParameters$fleetEffortRates[ifleet]
+      dataList$observedEffort[ifleet+1,] <- rep(fleetRate/(sum(fEInd[ind])/sum(ind)),dataList$Nyrs) # Effort = ex/mean(q)
+    }
+    #SMALL MESH OVERWITE. EVENTUALLY REMOVE THIS
+    print("********************* SMALL MESH & gillnet HARD CODED ****************************")
+    dataList$observedEffort[5,] <- rep(1E-6,dataList$Nyrs) # Effort = ex/mean(q)
+    dataList$observedEffort[6,] <- rep(1E-6,dataList$Nyrs) # Effort = ex/mean(q)
+
+
+
+
+
+
     # code this part if needed
   } else {
     stop(paste0("scenarioFlag can only be \"historic\" ,\"darwin\", or \"assessment\". You have = ",listOfParameters$scenarioFlag))
