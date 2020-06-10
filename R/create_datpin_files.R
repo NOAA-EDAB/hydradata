@@ -83,6 +83,10 @@ create_datpin_files <- function(listOfParameters,dataList){
 
   } else if (tolower(listOfParameters$scenarioFlag) == "effort") {
     options$assessmentOn <- 0
+    if(length(listOfParameters$fleetEffortRates) < dataList$Nfleets) {
+      nMissing <- dataList$Nfleets - length(listOfParameters$fleetEffortRates)
+      listOfParameters$fleetEffortRates <- c(listOfParameters$fleetEffortRates,rep(0.05,nMissing))
+    }
     if (listOfParameters$assessmentSpeciesFlag == "none") {
       options$assessmentWithSpeciesOn <- 0
     } else {
