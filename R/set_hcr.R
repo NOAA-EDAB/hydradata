@@ -5,7 +5,7 @@
 #' This function with create the step function \code{thresholds} and \code{exploitationOptions} given \code{minMaxThreshold}, \code{minMaxThreshold} and \code{Nthresholds}
 #'
 #' @param currentData List: The current hydraData in which changes need to be made
-#' @param Nthresholds Numeric scalar: Number of thresholds in the step function
+#' @param Nthresholds Numeric scalar: Number of thresholds in the step function (Default = 5)
 #' @param minMaxThresholds Numericric vector (1x2): Specifying the minimum and maximum threshold levels (proportion of B0) for management
 #' @param minMaxExploitations Numeric vector (1x2): Specifying the minimum and maximum exploitation levels at \code{minMaxThresholds}
 #' @param increment Numeric Scalar: increment to evaluate the number of scenarios between \code{minMaxExploitations}
