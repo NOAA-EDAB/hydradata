@@ -461,12 +461,22 @@ write_DatFile <- function(dataList,listOfParameters) {
   cat(c("#Guild Membership guildMembership. "),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat(c(" ",dataList$guildMembership),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
+  cat(c("#Fleet Membership fleetMembers(1,Nfleets) "),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$fleetMembership),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+
   # assessment thresholds and exploiation and step/linear ramp
   cat("# AssessmentPeriod. Time period (yrs) to assess guild biomass level",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat(c(" ",dataList$assessmentPeriod),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   cat("# init_int flagLinearRamp. // 0 = step function, 1 = linear function",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat(c(" ",dataList$flagLinearRamp),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+
+
+  cat("#init_vector minExploitation(1,Nfleets) minimum Exploitation rates imposed by each fleet",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$minExploitation),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+
+  cat("#init_vector maxExploitation(1,Nfleets) maximum Exploitation rates imposed by each fleet",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$maxExploitation),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   cat("# init_vector minMaxExploitation(1,2) - [MinExploitation, MaxExploitation",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat(c(" ",dataList$minMaxExploitation),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
