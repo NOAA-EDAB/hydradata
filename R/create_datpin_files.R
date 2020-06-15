@@ -21,10 +21,10 @@
 create_datpin_files <- function(listOfParameters,dataList){
 
   if (!file.exists(listOfParameters$outDir)) {stop(paste0("Directory ",listOfParameters$outDir," doesn't exist. Create it!"))}
+
+# Error Checks ------------------------------------------------------------
   # complete error checks to make sure all data conforms
-  ######################################
- ###### NOT DONE YET ###################
-  ######################################
+
   # options respesent additions to dataList
   options <- list()
 
@@ -35,6 +35,9 @@ create_datpin_files <- function(listOfParameters,dataList){
   }
 
 
+# Historical --------------------------------------------------------------
+
+
   if ((tolower(listOfParameters$scenarioFlag) == "historical") | (tolower(listOfParameters$scenarioFlag) == "darwin")) {
     # we assume a historical run. True Temp, True Effort, No asessment, Rec error, no survey error
     options$assessmentOn <- 0
@@ -42,6 +45,8 @@ create_datpin_files <- function(listOfParameters,dataList){
     # if assessmentOn = 0. exploitationoption are ignored but still need to be read in .
     options$exploitationLevels <- dataList$exploitationOptions[,1] # never used when assessment is off but needs a placeholder
     options$minMaxExploitation <- c(min(options$exploitationLevels),max(options$exploitationLevels)) # never used, just a placeholder
+
+# Assessment --------------------------------------------------------------
 
   } else if  (tolower(listOfParameters$scenarioFlag) == "assessment") {
     options$assessmentOn <- 1
@@ -81,36 +86,34 @@ create_datpin_files <- function(listOfParameters,dataList){
     dataList$observedEffort[5,] <- rep(1E-6,dataList$Nyrs) # Effort = ex/mean(q)
     dataList$observedEffort[6,] <- rep(1E-6,dataList$Nyrs) # Effort = ex/mean(q)
 
+# Effort ------------------------------------------------------------------
+  # Allows independent fleet effort in assessment
+
   } else if (tolower(listOfParameters$scenarioFlag) == "effort") {
-    options$assessmentOn <- 0
-    if(length(listOfParameters$fleetEffortRates) < dataList$Nfleets) {
-      nMissing <- dataList$Nfleets - length(listOfParameters$fleetEffortRates)
-      listOfParameters$fleetEffortRates <- c(listOfParameters$fleetEffortRates,rep(0.05,nMissing))
-    }
+    options$assessmentOn <- 1
+    # if(length(listOfParameters$fleetEffortRates) < dataList$Nfleets) {
+    #   nMissing <- dataList$Nfleets - length(listOfParameters$fleetEffortRates)
+    #   listOfParameters$fleetEffortRates <- c(listOfParameters$fleetEffortRates,rep(0.05,nMissing))
+    # }
     if (listOfParameters$assessmentSpeciesFlag == "none") {
       options$assessmentWithSpeciesOn <- 0
     } else {
       options$assessmentWithSpeciesOn <- 1
     }
+    # place holder for redundant code
+    options$exploitationLevels <- rep(0.05,dataList$Nthresholds)
+    options$minMaxExploitation <- c(.05,.05)
+    # all exploitation is controlled by minExploitation, maxExploitation (length = Nfleets).
+    # This is now part of dataList
 
-    if (tolower(listOfParameters$scenarioType) == "fixed") {
-      # all exploitations are the same
-      options$exploitationLevels <- rep(listOfParameters$maxExploitationRate/100,dataList$Nthresholds)
-      options$minMaxExploitation <- rep(listOfParameters$maxExploitationRate/100,2)
-    } else { #rampdown
-      # we have a ramp down scenario and the values in option$exploitation reflect this
-      options$minMaxExploitation <- c(min(options$exploitationLevels),max(options$exploitationLevels))
-    }
-
-    # effort needs to change to represent exploitation rate equal to rate specified by fleetEffortRates
+    # effort needs to change to represent exploitation rate equal to rate specified by minExploitation,maxExploitation.
     for (ifleet in 1:dataList$Nfleets) {
       fE <- as.numeric(dataList$fisheryq[,ifleet]) # pick out fishery q's
       indicator <- dataList$indicatorFisheryq[,ifleet] # pick out species to be used in mean
       fEInd <- fE*indicator
       ind <- as.numeric(fEInd) > 1e-29 # find all > 1e-29
       # first row is year
-
-      fleetRate <- listOfParameters$fleetEffortRates[ifleet]
+      fleetRate <- dataList$maxExploitation[ifleet] # for fixed minExploitation = maxExploitation
       dataList$observedEffort[ifleet+1,] <- rep(fleetRate/(sum(fEInd[ind])/sum(ind)),dataList$Nyrs) # Effort = ex/mean(q)
     }
     #SMALL MESH OVERWITE. EVENTUALLY REMOVE THIS
