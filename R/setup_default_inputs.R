@@ -6,7 +6,6 @@
 #'@param scenarioFlag Character string: Speciying a scenario of either "historical", "assessment", "effort". Default = "historical".
 #'@param scenarioType Character string: Type of assessment scenario. "fixed" or "ramp". (Only used if scenarioFlag is "assessment"). Default = "fixed"
 #'@param maxExploitationRate Integer: The level of the maximum exploitation in either "ramp" or "fixed". Valid choices are 5,10,15,20,25,30.(Only used if scenarioFlag is "assessment"). Default value = 30
-#'@param fleetEffortRates Numeric Vector. (Nfleets length) The starting exploitation rates for each fleet. Effort will be calculated accordingly. (This is only used if scenarioFlag ="effort") Default: c(.05,.05,.05,.05,.05)
 #'@param assessmentSpeciesFlag Character string: The level of species protection "none", "low", "high". (Only used if scenarioFlag is "assessment").
 #' "none" = specific species are not protected during an assessment, "low" = species are protected at same level as the complex, "high" = elasmobranchs get increased protection".
 #' Default = "none"
@@ -28,14 +27,13 @@
 #'
 #' @export
 
-setup_default_inputs <- function(outDir = getwd(),scenarioFlag="historical",temperatureFlag="true",scenarioType="fixed",maxExploitationRate=30, fleetEffortRates= c(0.05,.05,.05,.05,.05),assessmentSpeciesFlag="none",outputFilename="hydra_sim",fillLength=2000){
+setup_default_inputs <- function(outDir = getwd(),scenarioFlag="historical",temperatureFlag="true",scenarioType="fixed",maxExploitationRate=30,assessmentSpeciesFlag="none",outputFilename="hydra_sim",fillLength=2000){
 
   listOfParameters <- list()
   listOfParameters$scenarioFlag <- scenarioFlag
   listOfParameters$temperatureFlag <- temperatureFlag
   listOfParameters$scenarioType <- scenarioType
   listOfParameters$maxExploitationRate <- maxExploitationRate
-  listOfParameters$fleetEffortRates <- fleetEffortRates
   listOfParameters$assessmentSpeciesFlag <- assessmentSpeciesFlag
   listOfParameters$outputFilename <- outputFilename
   listOfParameters$fillLength <- fillLength # length of line to write to. if not long enough data wraps to next line
