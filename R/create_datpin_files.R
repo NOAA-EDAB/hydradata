@@ -38,7 +38,7 @@ create_datpin_files <- function(listOfParameters,dataList){
 # Historical --------------------------------------------------------------
 
 
-  if ((tolower(listOfParameters$scenarioFlag) == "historical") | (tolower(listOfParameters$scenarioFlag) == "darwin")) {
+  if ((tolower(listOfParameters$scenarioFlag) == "historic") | (tolower(listOfParameters$scenarioFlag) == "darwin")) {
     # we assume a historical run. True Temp, True Effort, No asessment, Rec error, no survey error
     options$assessmentOn <- 0
     options$assessmentWithSpeciesOn <- 0 # this is also ignored
@@ -568,6 +568,13 @@ write_DatFile <- function(dataList,listOfParameters) {
   cat("# init_int flagMSE determins level of output (0 or 1)",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
   cat(c(" ",dataList$flagMSE),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
+ # residence time for spceies on the bank. Proportion of year
+  cat("#  init_matrix catchProportion(1,Nareas,1,Nspecies). Proportion of the year in which resides in the management area",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$residenceTime),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+
+  # mortality rate outside of management area
+  cat("# init_matrix areaMortality(1,Nareas,1,Nspecies). Total mortality outside of areae management area",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
+  cat(c(" ",dataList$areaMortality),file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)
 
   # end of file
   cat("# eof",file=outputFileName,fill=listOfParameters$fillLength,append=TRUE)

@@ -27,7 +27,7 @@
 #'
 #' @export
 
-setup_default_inputs <- function(outDir = getwd(),scenarioFlag="historical",temperatureFlag="true",scenarioType="fixed",maxExploitationRate=30,assessmentSpeciesFlag="none",outputFilename="hydra_sim",fillLength=2000){
+setup_default_inputs <- function(outDir = getwd(),scenarioFlag="historic",temperatureFlag="true",scenarioType="fixed",maxExploitationRate=30,assessmentSpeciesFlag="none",outputFilename="hydra_sim",fillLength=2000){
 
   listOfParameters <- list()
   listOfParameters$scenarioFlag <- scenarioFlag
