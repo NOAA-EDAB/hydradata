@@ -46,6 +46,23 @@ create_datpin_files <- function(listOfParameters,dataList){
     options$exploitationLevels <- dataList$exploitationOptions[,1] # never used when assessment is off but needs a placeholder
     options$minMaxExploitation <- c(min(options$exploitationLevels),max(options$exploitationLevels)) # never used, just a placeholder
 
+
+# No effort - calibration -------------------------------------------------
+
+
+  } else if (tolower(listOfParameters$scenarioFlag) == "calibrate") {
+    # effort needs to change to represent zero fishing
+    for (ifleet in 1:dataList$Nfleets) {
+      dataList$observedEffort[ifleet+1,] <- rep(1E-6,dataList$Nyrs)
+    }
+    # zero stochasticity. Deterministic run
+    dataList$recStochastic <- rep(0,dataList$Nspecies)
+    options$assessmentOn <- 0
+    options$assessmentWithSpeciesOn <- 0 # this is also ignored
+    # if assessmentOn = 0. exploitationoption are ignored but still need to be read in .
+    options$exploitationLevels <- dataList$exploitationOptions[,1] # never used when assessment is off but needs a placeholder
+    options$minMaxExploitation <- c(min(options$exploitationLevels),max(options$exploitationLevels)) # never used, just a placeholder
+
 # Assessment --------------------------------------------------------------
 
   } else if  (tolower(listOfParameters$scenarioFlag) == "assessment") {
