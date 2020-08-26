@@ -21,7 +21,7 @@ Data are lazily loaded with the package
 
 Installation
 
-remotes::install_github("noaa-edab/hydradata", build_vignettes = TRUE)
+`remotes::install_github("noaa-edab/hydradata", build_vignettes = TRUE)`
 
 ## Help
 browseVignettes("hydradata")
