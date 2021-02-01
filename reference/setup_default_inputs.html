@@ -126,10 +126,16 @@ Once created any of the values can be changes to suit the intended model run" />
 Once created any of the values can be changes to suit the intended model run</p>
     </div>
 
-    <pre class="usage"><span class='fu'>setup_default_inputs</span><span class='op'>(</span>outDir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span><span class='op'>(</span><span class='op'>)</span>, scenarioFlag <span class='op'>=</span> <span class='st'>"historical"</span>,
-  temperatureFlag <span class='op'>=</span> <span class='st'>"true"</span>, scenarioType <span class='op'>=</span> <span class='st'>"fixed"</span>,
-  maxExploitationRate <span class='op'>=</span> <span class='fl'>30</span>, assessmentSpeciesFlag <span class='op'>=</span> <span class='st'>"none"</span>,
-  outputFilename <span class='op'>=</span> <span class='st'>"hydra_sim"</span>, fillLength <span class='op'>=</span> <span class='fl'>2000</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>setup_default_inputs</span><span class='op'>(</span>
+  outDir <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/getwd.html'>getwd</a></span><span class='op'>(</span><span class='op'>)</span>,
+  scenarioFlag <span class='op'>=</span> <span class='st'>"historic"</span>,
+  temperatureFlag <span class='op'>=</span> <span class='st'>"true"</span>,
+  scenarioType <span class='op'>=</span> <span class='st'>"fixed"</span>,
+  maxExploitationRate <span class='op'>=</span> <span class='fl'>30</span>,
+  assessmentSpeciesFlag <span class='op'>=</span> <span class='st'>"none"</span>,
+  outputFilename <span class='op'>=</span> <span class='st'>"hydra_sim"</span>,
+  fillLength <span class='op'>=</span> <span class='fl'>2000</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -140,7 +146,7 @@ Once created any of the values can be changes to suit the intended model run</p>
     </tr>
     <tr>
       <th>scenarioFlag</th>
-      <td><p>Character string: Speciying a scenario of either "historical" or "assessment". Default = "historical"</p></td>
+      <td><p>Character string: Speciying a scenario of either "historical", "assessment", "effort". Default = "historical".</p></td>
     </tr>
     <tr>
       <th>temperatureFlag</th>
