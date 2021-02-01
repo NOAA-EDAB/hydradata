@@ -4,15 +4,21 @@
 \alias{setup_default_inputs}
 \title{creates default input values for data file creation}
 \usage{
-setup_default_inputs(outDir = getwd(), scenarioFlag = "historical",
-  temperatureFlag = "true", scenarioType = "fixed",
-  maxExploitationRate = 30, assessmentSpeciesFlag = "none",
-  outputFilename = "hydra_sim", fillLength = 2000)
+setup_default_inputs(
+  outDir = getwd(),
+  scenarioFlag = "historic",
+  temperatureFlag = "true",
+  scenarioType = "fixed",
+  maxExploitationRate = 30,
+  assessmentSpeciesFlag = "none",
+  outputFilename = "hydra_sim",
+  fillLength = 2000
+)
 }
 \arguments{
 \item{outDir}{Character string: Path to where output will be saved. Default = current working directory}
 
-\item{scenarioFlag}{Character string: Speciying a scenario of either "historical" or "assessment". Default = "historical"}
+\item{scenarioFlag}{Character string: Speciying a scenario of either "historical", "assessment", "effort". Default = "historical".}
 
 \item{temperatureFlag}{Character string: Determins whether to use the observed temperature data (true) or the mean (mean). Default = "true"}
 

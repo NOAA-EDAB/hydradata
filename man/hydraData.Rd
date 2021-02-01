@@ -3,7 +3,6 @@
 \docType{package}
 \name{hydradata}
 \alias{hydradata}
-\alias{hydradata-package}
 \title{hydradata: Manipulation of input data used in Hydra}
 \description{
 Tools to aid in quickly changing and documenting input parameters to Hydra

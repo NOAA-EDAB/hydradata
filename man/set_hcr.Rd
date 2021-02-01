@@ -4,14 +4,18 @@
 \alias{set_hcr}
 \title{sets up Harvest Control Rules (HCR)}
 \usage{
-set_hcr(currentData = hydradata::hydraDataList, Nthresholds = 5,
-  minMaxThresholds = c(0.1, 0.4), minMaxExploitations = c(0.05, 0.4),
-  increment = 0.05)
+set_hcr(
+  currentData = hydradata::hydraDataList,
+  Nthresholds = 5,
+  minMaxThresholds = c(0.1, 0.4),
+  minMaxExploitations = c(0.05, 0.4),
+  increment = 0.05
+)
 }
 \arguments{
 \item{currentData}{List: The current hydraData in which changes need to be made}
 
-\item{Nthresholds}{Numeric scalar: Number of thresholds in the step function}
+\item{Nthresholds}{Numeric scalar: Number of thresholds in the step function (Default = 5)}
 
 \item{minMaxThresholds}{Numericric vector (1x2): Specifying the minimum and maximum threshold levels (proportion of B0) for management}
 
