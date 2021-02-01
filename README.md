@@ -23,12 +23,11 @@ Data are lazily loaded with the package
 
 ## Usage
 
-Installation
-install.packages("remotes")
-remotes::install_github("noaa-edab/hydradata", build_vignettes = TRUE)
+
+`remotes::install_github("noaa-edab/hydradata", build_vignettes = TRUE)`
 
 ## Help
-browseVignettes("hydradata")
+`browseVignettes("hydradata")`
 
 ## Contact
 
