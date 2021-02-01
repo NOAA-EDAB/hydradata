@@ -7,7 +7,7 @@ Maintainer: Andy Beet <andrew.beet@noaa.gov>
 Description: Baseline data are lazilty loaded with the package, these can be manipulated and then plotted (with documentation)
     to enable the user to visulaize the masses of input data. The data are then formatted into .dat and .pin files required for 
     Hydra to run.
-License: GPL-2
+License: file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
