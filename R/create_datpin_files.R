@@ -153,7 +153,7 @@ create_datpin_files <- function(listOfParameters,dataList){
     stop(paste("Can not have a historical run > ",dataList$Nyrs,"years. Not enough data!"))
   }
 
-  # updata data based on options
+  # update data based on options
   dataList <- modifyList(dataList,options)
 
   # write out dat file

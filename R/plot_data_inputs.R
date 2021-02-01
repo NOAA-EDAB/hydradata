@@ -1,11 +1,14 @@
-# A plotting suite for Hydra.
-#These functions comprise plotting routines for each component of the data
-#
-# #############################################################################
-# A complete rework is required. Code is clunky and prone to issues when expand
-###############################################################################
-#
-#This isnt exported with the package
+#' A plotting suite for Hydra.
+#'
+#'These functions comprise plotting routines for each component of the data
+#'
+#' #############################################################################
+#' A complete rework is required. Code is clunky and prone to issues when expand
+#'##############################################################################
+#'
+#'This isnt exported with the package
+#'@param inputData data passed
+#'
 
 # plots Intake, stomach content,
 binWidths_Calc <- function(inputData){
