@@ -1,7 +1,6 @@
-pandoc: 2.7.3
-pkgdown: 1.6.1
+pandoc: 3.1.11
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   user_guide: user_guide.html
-last_built: 2021-02-01T23:53Z
-
+last_built: 2025-01-20T18:49Z
